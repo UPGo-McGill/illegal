@@ -21,7 +21,6 @@ plot(plateau$geometry)
 plot (plateau_buff$geometry, add = TRUE)
 
 ## import airbnb property file
-
 property <- read_csv("Data/Montreal_property.csv")
 
 names(property) <-
@@ -45,11 +44,36 @@ names(property) <-
     "Latitude", "Longitude", "Overall Rating")
 
 property <- property[,c(1:7,50:51)]
-property <- arrange(property, .data$Property_ID)
+property <- arrange(property, .data$Property_ID) %>%
+  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326) %>%
+  st_transform(3347)
 
 ## import daily file
 daily <- read_csv("Data/Montreal_daily.csv")
+names(daily) <- c("Property_ID", "Date", "Status", "Booked_Date", "Price_USD",
+                  "Reservation_ID")
+
+daily$Date <- as.Date(daily$Date)
+daily$Booked_Date <- as.Date(daily$Booked_Date)
+daily <- daily[,c(1:3, 5)]
+daily <- arrange(daily, .data$Property_ID, .data$Date)
 
 ## intersect montreal listings with the plateau buffer
-plateau_listings <- property_file[lengths(st_within(property, plateau_buff))>0,]
+plateau_listings <- property[lengths(st_within(property, plateau_buff))>0,]
 
+## find plateau listings active in 2018
+
+start_date <- "2018-01-01" %>% 
+  as.Date()
+
+end_date <- "2018-12-31" %>% 
+  as.Date()
+
+  plateau_listings <- filter(plateau_listings, .data$Scraped >= start_date)
+  daily <- filter(daily, .data$Date >= start_date)
+
+  plateau_listings <- filter(plateau_listings, .data$Created <= end_date)
+  daily <- filter(daily, .data$Date <= end_date)
+  
+plot(plateau_listings$geometry)
+plot(plateau_buff, add = TRUE)
