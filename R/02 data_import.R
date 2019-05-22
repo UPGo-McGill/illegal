@@ -83,8 +83,11 @@ quebec_permits <- read_csv("Data/x.csv")
   ## will have to update if we change the google doc, just adding in now so we can start 
   ## removing listings and checking our work as we go
 
-plateau_legal <- read_csv("Data/plateau_legal.csv") 
-names (plateau_legal) <- c("ETBL_ID", "Property_ID", "Host_ID")
+quebec_legal <- read_csv("Data/plateau_legal.csv") 
+names (quebec_legal) <- c("ETBL_ID", "Property_ID", "Host_ID")
 
-# remove legal listings from plateau listings
-plateau_illegal <- plateau_listings [!plateau_listings$Property_ID %in% plateau_legal$Property_ID,]
+# add a legal column
+plateau_listings$Legal <- plateau_listings$Property_ID %in% quebec_legal$Property_ID
+
+# add quebec establishment ID
+plateau_listings <- left_join(plateau_listings, quebec_legal)
