@@ -80,6 +80,9 @@ plot(plateau_buff, add = TRUE)
 quebec_permits <- read_csv("Data/x.csv")
 
 # import legal plateau listings
+  ## will have to update if we change the google doc, just adding in now so we can start 
+  ## removing listings and checking our work as we go
+
 plateau_legal <- read_csv("Data/plateau_legal.csv") 
 names (plateau_legal) <- c("ETBL_ID", "Property_ID", "Host_ID")
 
