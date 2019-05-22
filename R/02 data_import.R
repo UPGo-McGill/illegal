@@ -7,7 +7,6 @@ source("R/01 helper_functions.R")
 montreal <- read_sf(dsn = ".", layer = "plateau") %>%
   st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326) %>%
   st_transform(3347)
-View(montreal)
 
 plateau <- filter(montreal, CODEID=="5")
 
@@ -16,9 +15,8 @@ plateau_buff <-
   summarize(geometry = st_union(geometry)) %>% 
   st_buffer(200)
 
-plot(plateau$geometry)
-
-plot (plateau_buff$geometry, add = TRUE)
+plot (plateau_buff$geometry)
+plot(plateau$geometry, add = TRUE)
 
 ## import airbnb property file
 property <- read_csv("Data/Montreal_property.csv")
@@ -77,3 +75,10 @@ end_date <- "2018-12-31" %>%
   
 plot(plateau_listings$geometry)
 plot(plateau_buff, add = TRUE)
+
+# import quebec permit file
+quebec_permits <- read_csv("Data/quebec_permits.csv")
+
+# import legal plateau listings
+plateau_legal <- read_csv("Data/plateau_legal.csv") 
+names (plateau_legal) <- c("ETBL_ID", "Property_ID", "Host_ID")
