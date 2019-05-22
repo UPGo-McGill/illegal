@@ -77,8 +77,11 @@ plot(plateau_listings$geometry)
 plot(plateau_buff, add = TRUE)
 
 # import quebec permit file
-quebec_permits <- read_csv("Data/quebec_permits.csv")
+quebec_permits <- read_csv("Data/x.csv")
 
 # import legal plateau listings
 plateau_legal <- read_csv("Data/plateau_legal.csv") 
 names (plateau_legal) <- c("ETBL_ID", "Property_ID", "Host_ID")
+
+# remove legal listings from plateau listings
+plateau_illegal <- plateau_listings [!plateau_listings$Property_ID %in% plateau_legal$Property_ID,]
