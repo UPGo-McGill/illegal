@@ -46,6 +46,44 @@ property <- arrange(property, .data$Property_ID) %>%
   st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326) %>%
   st_transform(3347)
 
+# add housing field
+housing_names <- c(
+  "House", "Private room in house", "Apartment", "Cabin",
+  "Entire condominium", "Townhouse", "Condominium", "Entire apartment",
+  "Private room", "Loft", "Place", "Entire house", "Villa", "Guesthouse",
+  "Private room in apartment", "Guest suite", "Shared room in dorm",
+  "Chalet", "Dorm", "Entire chalet", "Shared room in loft", "Cottage",
+  "Resort", "Serviced apartment", "Other", "Bungalow", "Farm stay",
+  "Private room in villa", "Entire loft", "Entire villa",
+  "Private room in guesthouse", "Island", "Entire cabin", "Vacation home",
+  "Entire bungalow", "Earth house", "Nature lodge", "In-law",
+  "Entire guest suite", "Shared room in apartment", "Private room in loft",
+  "Tiny house", "Castle", "Earth House", "Private room in condominium",
+  "Entire place", "Shared room", "Hut", "Private room in guest suite",
+  "Private room in townhouse", "Timeshare", "Entire townhouse",
+  "Shared room in house", "Entire guesthouse", "Shared room in condominium",
+  "Cave", "Private room in cabin", "Dome house",
+  "Private room in vacation home", "Private room in dorm",
+  "Entire serviced apartment", "Private room in bungalow",
+  "Private room in serviced apartment", "Entire Floor", "Entire earth house",
+  "Entire castle", "Shared room in chalet", "Shared room in bungalow",
+  "Shared room in townhouse", "Entire cottage", "Private room in castle",
+  "Private room in chalet", "Private room in nature lodge", "Entire in-law",
+  "Shared room in guesthouse", "Casa particular", "Serviced flat", "Minsu",
+  "Entire timeshare", "Shared room in timeshare", "Entire vacation home",
+  "Entire nature lodge", "Entire island", "Private room in in-law",
+  "Shared room in serviced apartment", "Shared room in cabin", "Entire dorm",
+  "Entire cave", "Private room in timeshare", "Shared room in guest suite",
+  "Private room in cave", "Entire tiny house",
+  "Private room in casa particular (cuba)", "Casa particular (cuba)",
+  "Private room in cottage", "Private room in tiny house",
+  "Entire casa particular", "")
+
+property <-
+  property %>%
+  mutate(Housing = ifelse(
+    .data$Property_Type %in% housing_names, TRUE, FALSE))
+
 ## import daily file
 daily <- read_csv("Data/Montreal_daily.csv")
 names(daily) <- c("Property_ID", "Date", "Status", "Booked_Date", "Price_USD",
@@ -57,23 +95,22 @@ daily <- daily[,c(1:3, 5)]
 daily <- arrange(daily, .data$Property_ID, .data$Date)
 
 ## intersect montreal listings with the plateau buffer
-plateau_listings <- property[lengths(st_within(property, plateau_buff))>0,]
+plateau_property <- property[lengths(st_within(property, plateau_buff))>0,]
 
 ## find plateau listings active in 2018
-
 start_date <- "2018-01-01" %>% 
   as.Date()
 
 end_date <- "2018-12-31" %>% 
   as.Date()
 
-  plateau_listings <- filter(plateau_listings, .data$Scraped >= start_date)
+plateau_property <- filter(plateau_property, .data$Scraped >= start_date)
   daily <- filter(daily, .data$Date >= start_date)
 
-  plateau_listings <- filter(plateau_listings, .data$Created <= end_date)
+  plateau_property <- filter(plateau_property, .data$Created <= end_date)
   daily <- filter(daily, .data$Date <= end_date)
   
-plot(plateau_listings$geometry)
+plot(plateau_property$geometry)
 plot(plateau_buff, add = TRUE)
 
 # import quebec permit file
@@ -83,17 +120,25 @@ plot(plateau_buff, add = TRUE)
   ## will have to update if we change the google doc, just adding in now so we can start 
   ## removing listings and checking our work as we go
 
-quebec_legal <- read_csv("Data/plateau_legal.csv") 
-names (quebec_legal) <- c("ETBL_ID", "Property_ID", "Host_ID")
+plateau_legal <- read_csv("Data/plateau_legal.csv") 
+names (plateau_legal) <- c("ETBL_ID", "Property_ID", "Host_ID")
 
 # add a legal column
-plateau_listings$Legal <- plateau_listings$Property_ID %in% quebec_legal$Property_ID
+plateau_property$Legal <- plateau_property$Property_ID %in% plateau_legal$Property_ID
 
 # add quebec establishment ID
-plateau_listings <- left_join(plateau_listings, quebec_legal)
+plateau_property <- left_join(plateau_property, plateau_legal)
+
+# join property and daily file
+plateau_daily <- 
+  plateau_property %>%
+  inner_join(daily, ., by = "Property_ID")
 
 # any property rented a lot - illegal
 
-# any entire home multi-listing (except 1) - illegal
+# any entire home multi-listing - illegal
+plateau_daily <- strr_multilistings(plateau_daily)
+
+# however, one of each multilisting is legal - take the least frequently rented (most likely to be a primary residence)
 
 # private rooms / ghost hotels - illegal
