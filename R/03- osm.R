@@ -11,10 +11,15 @@ plateau_streets <-
   st_transform(26918) %>%
   select(osm_id, name, geometry)
 
+plot(plateau_streets)
 
+plateau_streets %>%
+  filter(name == "Rue Saint-Denis" | str_detect(name, "Sherbrooke"))
 
 
 plot(plateau_streets %>% filter(name == "Rue Saint-Denis"))
+
+plateau_streets %>% filter(str_detect(name, "Sherbrooke"))
 
 plateau_dodgr <-
   dodgr_streetnet("plateau") %>%
