@@ -25,11 +25,10 @@ st_denis <-
 
 tm_shape(candidate_streets) +
   tm_lines(col = "grey") +
-  tm_shape(st_denis[1,]) +
+  tm_shape(st_denis[8,]) +
   tm_lines(col = "red")
 
-
-
+##9, 12,13, 14, 15, 16, 22, 27, 28, 31, 32, 33, 29, 40, 41, 42
 
 
 plot(plateau_streets %>% filter(name == "Rue Saint-Denis"))
