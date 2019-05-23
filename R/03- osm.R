@@ -13,7 +13,7 @@ library(dodgr)
 library(stplanr)
 
 
-hf_osm <-
+plateau_osm <-
   plateau_listings %>%
   # filter(nbhd == "plateau") %>%
   st_transform(4326) %>%
@@ -24,23 +24,23 @@ hf_osm <-
   add_osm_feature(key = "highway") %>%
   osmdata_sf()
 
-hf_streets <-
-  rbind(hf_osm$osm_polygons %>% st_cast("LINESTRING"), hf_osm$osm_lines) %>%
+plateau_streets <-
+  rbind(plateau_osm$osm_polygons %>% st_cast("LINESTRING"), plateau_osm$osm_lines) %>%
   as_tibble() %>%
   st_as_sf() %>%
   st_transform(4326) %>%
   select(osm_id, name, geometry)
 
-plot(hf_streets %>% filter(name == "Rue Saint-Denis"))
+plot(plateau_streets %>% filter(name == "Rue Saint-Denis"))
 
-jhf_dodgr <-
-  dodgr_streetnet("queens new york city") %>%
+plateau_dodgr <-
+  dodgr_streetnet("plateau") %>%
   weight_streetnet() %>%
   dodgr_to_sf() %>%
   st_sf() %>%
   as_tibble() %>%
   st_as_sf() %>%
-  st_transform(26918)
+  st_transform(4326)
 
 jhf_dodgr <-
   target_neighbourhoods %>%
