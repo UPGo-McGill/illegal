@@ -14,9 +14,9 @@ plateau_streets <-
 plot(plateau_streets)
 
 candidate_streets <- plateau_streets %>%
-  filter(name == "Rue Saint-Denis" |
+  filter(name == "Boulevard Saint-Laurent" |
            str_detect(name, "Sherbrooke") |
-         name == "Rue Gilford") %>% 
+         name == "Avenue du Mont-Royal Est") %>% 
   select(name)
 
 st_denis <- 
@@ -28,7 +28,18 @@ tm_shape(candidate_streets) +
   tm_shape(st_denis[8,]) +
   tm_lines(col = "red")
 
-##9, 12,13, 14, 15, 16, 22, 27, 28, 31, 32, 33, 29, 40, 41, 42
+## segments on st denis: 9, 12,13, 14, 15, 16, 22, 27, 28, 31, 32, 33, 29, 40, 41, 42
+
+st_laurent <- 
+  plateau_streets %>%
+  filter(name == "Boulevard Saint-Laurent")
+
+tm_shape(candidate_streets) +
+  tm_lines(col = "grey") +
+  tm_shape(st_laurent[7,]) +
+  tm_lines(col = "red")
+
+# segments on st laurent
 
 
 plot(plateau_streets %>% filter(name == "Rue Saint-Denis"))
