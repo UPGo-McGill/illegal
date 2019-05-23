@@ -13,8 +13,23 @@ plateau_streets <-
 
 plot(plateau_streets)
 
-plateau_streets %>%
-  filter(name == "Rue Saint-Denis" | str_detect(name, "Sherbrooke"))
+candidate_streets <- plateau_streets %>%
+  filter(name == "Rue Saint-Denis" |
+           str_detect(name, "Sherbrooke") |
+         name == "Rue Gilford") %>% 
+  select(name)
+
+st_denis <- 
+  plateau_streets %>%
+  filter(name == "Rue Saint-Denis")
+
+tm_shape(candidate_streets) +
+  tm_lines(col = "grey") +
+  tm_shape(st_denis[1,]) +
+  tm_lines(col = "red")
+
+
+
 
 
 plot(plateau_streets %>% filter(name == "Rue Saint-Denis"))
