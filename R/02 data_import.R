@@ -77,7 +77,7 @@ plot(plateau_listings$geometry)
 plot(plateau_buff, add = TRUE)
 
 # import quebec permit file
-quebec_permits <- read_csv("Data/x.csv")
+# quebec_permits <- read_csv("Data/x.csv")
 
 # import legal plateau listings
   ## will have to update if we change the google doc, just adding in now so we can start 
@@ -91,3 +91,9 @@ plateau_listings$Legal <- plateau_listings$Property_ID %in% quebec_legal$Propert
 
 # add quebec establishment ID
 plateau_listings <- left_join(plateau_listings, quebec_legal)
+
+# any property rented a lot - illegal
+
+# any entire home multi-listing (except 1) - illegal
+
+# private rooms / ghost hotels - illegal
