@@ -136,9 +136,36 @@ plateau_daily <-
 
 # any property rented a lot - illegal
 
-# any entire home multi-listing - illegal
-plateau_daily <- strr_multilistings(plateau_daily)
+# determine entire home multi-listings
+listing_type <- "Entire home/apt"
+plateau_daily <- plateau_daily %>% 
+    group_by(Listing_Type, Host_ID, Date) %>% 
+    mutate(ML = ifelse(
+    n() >= 2 & !! listing_type == "Entire home/apt", TRUE, FALSE)) %>% 
+    ungroup()
 
-# however, one of each multilisting is legal - take the least frequently rented (most likely to be a primary residence)
+# the least frequently rented entire home multi listing is legal, the remainder are illegal
+multilistings_legal <- plateau_daily %>% 
+    filter(Legal == FALSE, ML == TRUE) %>% 
+    group_by(Host_ID, Property_ID) %>% 
+    count(Status == "B")
+
+names(multilistings_legal) <- c("Host_ID", "Property_ID", "Blocked", "n")
+
+multilistings_legal <- multilistings_legal %>% 
+  filter(Blocked == TRUE) %>% 
+  inner_join(multilistings_legal %>% 
+               filter(Blocked == TRUE) %>% 
+               group_by(Host_ID) %>% 
+               summarise(n = max(n)))
+
+## take a random one for each host as some hosts now have multiple legal 
+# (1330 legal multilistings but should only be 1197)
+
+
+
+## find the property ID that has the most blocked days per host
+
+
 
 # private rooms / ghost hotels - illegal
