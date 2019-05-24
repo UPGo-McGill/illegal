@@ -15,9 +15,6 @@ plateau_buff <-
   summarize(geometry = st_union(geometry)) %>% 
   st_buffer(200)
 
-plot (plateau_buff$geometry)
-plot(plateau$geometry, add = TRUE)
-
 ## import airbnb property file
 property <- read_csv("Data/Montreal_property.csv")
 
@@ -94,6 +91,10 @@ daily$Booked_Date <- as.Date(daily$Booked_Date)
 daily <- daily[,c(1:3, 5)]
 daily <- arrange(daily, .data$Property_ID, .data$Date)
 
+# make sure listings are present in both tables
+property <- filter(property, .data$Property_ID %in% daily$Property_ID)
+daily <- filter(daily, .data$Property_ID %in% property$Property_ID)
+
 ## intersect montreal listings with the plateau buffer
 plateau_property <- property[lengths(st_within(property, plateau_buff))>0,]
 
@@ -109,29 +110,23 @@ end_date <- "2018-12-31" %>%
 
   plateau_property <- filter(plateau_property, .data$Created <= end_date)
   daily <- filter(daily, .data$Date <= end_date)
-  
-plot(plateau_property$geometry)
-plot(plateau_buff, add = TRUE)
 
-# import quebec permit file
-# quebec_permits <- read_csv("Data/x.csv")
-
-# import legal plateau listings
-plateau_legal <- read_csv("Data/plateau_legal.csv") 
-names (plateau_legal) <- c("ETBL_ID", "Property_ID", "Host_ID")
+# import legal permitted plateau listings
+plateau_permit <- read_csv("Data/plateau_legal.csv") 
+names (plateau_permit) <- c("ETBL_ID", "Property_ID", "Host_ID")
 
 # add a permit column
-plateau_property$Permit <- plateau_property$Property_ID %in% plateau_legal$Property_ID
+plateau_property$Permit <- plateau_property$Property_ID %in% plateau_permit$Property_ID
 
 # add quebec establishment ID
-plateau_property <- left_join(plateau_property, plateau_legal)
+plateau_property <- left_join(plateau_property, plateau_permit)
 
 # join property and daily file
 plateau_daily <- 
   plateau_property %>%
   inner_join(daily, ., by = "Property_ID")
 
-# frequently rented
+# find those frequently rented/available 
 available <- plateau_daily %>% 
             group_by(Host_ID, Property_ID) %>% 
             count(Status == "A")
@@ -154,9 +149,9 @@ rm(available, reserved)
 frequent <- frequent %>% 
   filter(n_available >=183 & n_reserved >= 90) 
 
-plateau_property$Frequent <- !plateau_property$Property_ID %in% frequent$Property_ID
+plateau_property$Frequent <- plateau_property$Property_ID %in% frequent$Property_ID
 
-# determine entire home multi-listings
+# entire home multi-listings
 listing_type <- "Entire home/apt"
 plateau_daily <- plateau_daily %>% 
     group_by(Listing_Type, Host_ID, Date) %>% 
@@ -164,22 +159,27 @@ plateau_daily <- plateau_daily %>%
     n() >= 2 & !! listing_type == "Entire home/apt", TRUE, FALSE)) %>% 
     ungroup()
 
-###################################### OPTION 1 ##################################################
-# the least frequently rented/available entire home multi listing is legal, the remainder are illegal
-# only run this section if you want to remove the least frequently rented/available EH ML (otherwise skip to Option 2)
-# only run option 1 OR option 2 (line 255)
+multilistings <- select(plateau_daily, c(1,15)) %>% 
+  distinct()
 
+multilistings <- filter(multilistings, ML == TRUE)
+
+plateau_property$ML <- plateau_property$Property_ID %in% multilistings$Property_ID
+
+rm(multilistings)
+
+# least frequently rented multi-listing
 multilistings_available <- plateau_daily %>% 
-    filter(Legal == "Unsure" | Legal == "No", ML == TRUE) %>% 
-    group_by(Host_ID, Property_ID) %>% 
-    count(Status == "A") 
+  filter(ML == TRUE) %>% 
+  group_by(Host_ID, Property_ID) %>% 
+  count(Status == "A") 
 names(multilistings_available) <- c("Host_ID", "Property_ID", "Available", "n_available")
 multilistings_available <-
   filter(multilistings_available, Available == TRUE) %>% 
   select(-c(3))
 
 multilistings_reserved <- plateau_daily %>% 
-  filter(Legal == "Unsure" | Legal == "No", ML == TRUE) %>% 
+  filter(ML == TRUE) %>% 
   group_by(Host_ID, Property_ID) %>% 
   count(Status == "R") 
 names(multilistings_reserved) <- c("Host_ID", "Property_ID", "Reserved", "n_reserved")
@@ -198,7 +198,7 @@ multilistings$n_available_reserved <- multilistings$n_available + multilistings$
 
 multilistings <- select(multilistings, -c(3,4))
 
-multilistings_legal <- multilistings %>% 
+multilistings_primary <- multilistings %>% 
   inner_join(multilistings %>% 
                group_by(Host_ID) %>% 
                summarise(n = min(n_available_reserved))) %>% 
@@ -206,62 +206,18 @@ multilistings_legal <- multilistings %>%
   group_by(Host_ID) %>% 
   sample_n(1)
 
-multilistings <- multilistings %>%
-    select(-c(3))
+plateau_property$ML_primary <- plateau_property$Property_ID %in% multilistings_primary$Property_ID
 
-multilistings$Legal <- multilistings$Property_ID %in% multilistings_legal$Property_ID
-multilistings$Legal <- ifelse(multilistings$Legal == TRUE, "Yes", "No") %>% 
-  as.character()
+# private rooms / ghost hotels
 
-rm(multilistings_legal)
-
-## if the listing is in multilistings AND is legal, the property is legal. 
-## if the listings is in multilistings AND is illegal, the property is illegal. 
-## the rest are unsure.
-
+# determine if legal using the following variables: permit, frequent, ML, ML_primary, GH
 plateau_property <- 
-  left_join(plateau_property, multilistings, by = "Property_ID") 
+  plateau_property %>% 
+  mutate(Legal = case_when(
+    Permit == TRUE ~ TRUE,
+    Frequent == TRUE ~ FALSE,
+    ML_primary == TRUE ~ TRUE,
+    ML == TRUE ~ FALSE,
+    Frequent == FALSE ~ TRUE))
 
-plateau_property$Legal <- 
-  ifelse(!is.na(plateau_property$Legal.y), 
-         plateau_property$Legal.y, 
-         plateau_property$Legal.x)
 
-plateau_property <- select(plateau_property, -c(9,11))
-
-plateau_daily <- 
-  plateau_property %>%
-  inner_join(daily, ., by = "Property_ID")
-
-###################################### OPTION 2 ###############################################
-# all multilistings are illegal
-# only run option 1 OR option 2.
-multilistings <- select(plateau_daily, c(1,15)) %>% 
-  distinct()
-
-multilistings$Legal <- ifelse(multilistings$ML == TRUE, "No", NA)
-multilistings <- select(multilistings, -c(2))
-
-## if the listing is in multilistings, the property is illegal UNLESS they have a permit.
-## the rest are unsure.
-
-plateau_property <- 
-  left_join(plateau_property, multilistings, by = "Property_ID") 
-
-plateau_property$Legal <- 
-  ifelse(!is.na(plateau_property$Legal.x), 
-         plateau_property$Legal.x, 
-         plateau_property$Legal.y)
-
-plateau_property <- select(plateau_property, -c(9,11))
-
-plateau_daily <- 
-  plateau_property %>%
-  inner_join(daily, ., by = "Property_ID")
-
-# private rooms / ghost hotels - illegal
-
-# compare legal vs. illegal
-filter(plateau_property, Legal == "Yes")
-filter(plateau_property, Legal == "No")
-filter(plateau_property, Legal == "Unsure")
