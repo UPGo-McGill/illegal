@@ -58,6 +58,13 @@ st_laurent_seg <- st_union(st_laurent_seg)
 #st_denis_sherbrooke <- st_intersects (st_denis_seg, sherbrooke)
 
 ##BUFFER
+st_denis_buff <-
+  st_denis_seg %>%
+  st_buffer(200)
+
+st_laurent_buff <-
+  st_laurent_seg %>%
+  st_buffer(200)
 
 
 ####
