@@ -43,7 +43,6 @@ tm_shape(candidate_streets) +
   tm_shape(st_laurent[11,]) +
   tm_lines(col = "red")
 
-st_union(candidate_streets(row(11)))
 # segments on st laurent: part of 9, and part of 11, 12
 
 plot(plateau_streets %>% filter(name == "Rue Saint-Denis"))
