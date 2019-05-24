@@ -218,5 +218,5 @@ plateau_property <-
     Frequent == TRUE ~ FALSE,
     ML_primary == TRUE ~ TRUE,
     ML == TRUE ~ FALSE,
-    Frequent == FALSE ~ TRUE)) %>% 
+    Frequent == FALSE & ML == FALSE ~ TRUE)) %>% 
     select(c(1:8, 10, 15, 9, 12:14, 11))
