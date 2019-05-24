@@ -88,3 +88,4 @@ tm_shape(candidate_streets)+
   tm_shape(st_laurent_prop[])+
   tm_dots(size = 0.05)
 
+mapview(st_denis_prop)
