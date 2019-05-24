@@ -120,9 +120,8 @@ plot(plateau_buff, add = TRUE)
 plateau_legal <- read_csv("Data/plateau_legal.csv") 
 names (plateau_legal) <- c("ETBL_ID", "Property_ID", "Host_ID")
 
-# add a legal column
-plateau_property$Legal <- plateau_property$Property_ID %in% plateau_legal$Property_ID
-plateau_property$Legal <- ifelse(plateau_property$Legal == TRUE, "Yes", "Unsure")
+# add a permit column
+plateau_property$Permit <- plateau_property$Property_ID %in% plateau_legal$Property_ID
 
 # add quebec establishment ID
 plateau_property <- left_join(plateau_property, plateau_legal)
@@ -132,7 +131,7 @@ plateau_daily <-
   plateau_property %>%
   inner_join(daily, ., by = "Property_ID")
 
-# any property rented a lot - illegal
+# frequently rented
 available <- plateau_daily %>% 
             group_by(Host_ID, Property_ID) %>% 
             count(Status == "A")
@@ -155,26 +154,8 @@ rm(available, reserved)
 frequent <- frequent %>% 
   filter(n_available >=183 & n_reserved >= 90) 
 
-plateau_property$Legal_frequent <- !plateau_property$Property_ID %in% frequent$Property_ID
-plateau_property$Legal_frequent <- ifelse(plateau_property$Legal_frequent == FALSE, "No", NA) %>% 
-  as.character()
+plateau_property$Frequent <- !plateau_property$Property_ID %in% frequent$Property_ID
 
-plateau_property$Legal <- 
-  ifelse(!is.na(plateau_property$Legal_frequent), 
-         plateau_property$Legal_frequent, 
-         plateau_property$Legal)
-
-plateau_property <- select(plateau_property, -c(12))
-
-plateau_daily <-
-  inner_join(plateau_daily, plateau_property, by = c ("Property_ID", "Host_ID" )) %>% 
-  select(-c(12, 15:20, 22:23))
-
-names(plateau_daily) <- c("Property_ID", "Date", "Status", "Price_USD", 
-                          "Host_ID", "Listing_Title", "Property_Type", 
-                          "Listing_Type", "Created", "Scraped", "Housing", 
-                          "ETBL_ID", "geometry", "Legal")
-  
 # determine entire home multi-listings
 listing_type <- "Entire home/apt"
 plateau_daily <- plateau_daily %>% 
@@ -183,7 +164,11 @@ plateau_daily <- plateau_daily %>%
     n() >= 2 & !! listing_type == "Entire home/apt", TRUE, FALSE)) %>% 
     ungroup()
 
+###################################### OPTION 1 ##################################################
 # the least frequently rented/available entire home multi listing is legal, the remainder are illegal
+# only run this section if you want to remove the least frequently rented/available EH ML (otherwise skip to Option 2)
+# only run option 1 OR option 2 (line 255)
+
 multilistings_available <- plateau_daily %>% 
     filter(Legal == "Unsure" | Legal == "No", ML == TRUE) %>% 
     group_by(Host_ID, Property_ID) %>% 
@@ -213,8 +198,6 @@ multilistings$n_available_reserved <- multilistings$n_available + multilistings$
 
 multilistings <- select(multilistings, -c(3,4))
 
-# as some operators have multiple listings available+reserved for the same number of days, take one listing
-  # from each grouping (host)
 multilistings_legal <- multilistings %>% 
   inner_join(multilistings %>% 
                group_by(Host_ID) %>% 
@@ -240,9 +223,35 @@ plateau_property <-
   left_join(plateau_property, multilistings, by = "Property_ID") 
 
 plateau_property$Legal <- 
-ifelse(!is.na(plateau_property$Legal.y), 
-       plateau_property$Legal.y, 
-       plateau_property$Legal.x)
+  ifelse(!is.na(plateau_property$Legal.y), 
+         plateau_property$Legal.y, 
+         plateau_property$Legal.x)
+
+plateau_property <- select(plateau_property, -c(9,11))
+
+plateau_daily <- 
+  plateau_property %>%
+  inner_join(daily, ., by = "Property_ID")
+
+###################################### OPTION 2 ###############################################
+# all multilistings are illegal
+# only run option 1 OR option 2.
+multilistings <- select(plateau_daily, c(1,15)) %>% 
+  distinct()
+
+multilistings$Legal <- ifelse(multilistings$ML == TRUE, "No", NA)
+multilistings <- select(multilistings, -c(2))
+
+## if the listing is in multilistings, the property is illegal UNLESS they have a permit.
+## the rest are unsure.
+
+plateau_property <- 
+  left_join(plateau_property, multilistings, by = "Property_ID") 
+
+plateau_property$Legal <- 
+  ifelse(!is.na(plateau_property$Legal.x), 
+         plateau_property$Legal.x, 
+         plateau_property$Legal.y)
 
 plateau_property <- select(plateau_property, -c(9,11))
 
