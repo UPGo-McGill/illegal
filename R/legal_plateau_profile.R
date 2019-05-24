@@ -123,7 +123,22 @@ superhost <- superhost %>% count(Superhost)
 # 1G Response rates and times
 summarise(plateau_legal, AvgRR = mean(Response_Rate))
 
-is.na(plateau_legal$Response_Time_min)
+mean(plateau_legal$Response_Time_min, na.rm = TRUE)
 
-plateau_legal %>%
-  summarise(AvgRT = mean(Response_Time_min))
+ggplot(data = plateau_legal, aes(plateau_legal$Response_Time_min)) +
+  geom_histogram(binwidth = 5)
+
+filter(plateau_legal, Response_Time_min <= 5)
+
+
+## 2 Income
+
+# 2A Average listing price
+mean(plateau_legal$Average_Daily_Rate_USD, na.rm = TRUE)
+
+# 2B Average LTM income per listing
+mean(plateau_legal$Annual_Revenue_LTM_USD, na.rm = TRUE)
+
+# 2C Average LTM income per host
+plateau_legal_grouped <- plateau_legal %>% 
+  group_by(Host_ID)
