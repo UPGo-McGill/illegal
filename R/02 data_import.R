@@ -104,7 +104,7 @@ start_date <- "2018-01-01" %>%
 end_date <- "2018-12-31" %>% 
   as.Date()
 
-plateau_property <- filter(plateau_property, .data$Scraped >= start_date)
+  plateau_property <- filter(plateau_property, .data$Scraped >= start_date)
   daily <- filter(daily, .data$Date >= start_date)
 
   plateau_property <- filter(plateau_property, .data$Created <= end_date)
@@ -117,9 +117,6 @@ plot(plateau_buff, add = TRUE)
 # quebec_permits <- read_csv("Data/x.csv")
 
 # import legal plateau listings
-  ## will have to update if we change the google doc, just adding in now so we can start 
-  ## removing listings and checking our work as we go
-
 plateau_legal <- read_csv("Data/plateau_legal.csv") 
 names (plateau_legal) <- c("ETBL_ID", "Property_ID", "Host_ID")
 
@@ -135,7 +132,7 @@ plateau_daily <-
   plateau_property %>%
   inner_join(daily, ., by = "Property_ID")
 
-# any property rented a lot - illegal
+# any property rented a lot - illegal - update property file, perform an inner join with the daily file.
 
 # determine entire home multi-listings
 listing_type <- "Entire home/apt"
@@ -147,7 +144,7 @@ plateau_daily <- plateau_daily %>%
 
 # the least frequently rented entire home multi listing is legal, the remainder are illegal
 multilistings <- plateau_daily %>% 
-    filter(Legal == FALSE, ML == TRUE) %>% 
+    filter(Legal == "Unsure" | Legal == "No", ML == TRUE) %>% 
     group_by(Host_ID, Property_ID) %>% 
     count(Status == "B") 
 
@@ -170,5 +167,28 @@ multilistings <- multilistings %>%
     select(-c(3,4))
 
 multilistings$Legal <- multilistings$Property_ID %in% multilistings_legal$Property_ID
+multilistings$Legal <- ifelse(multilistings$Legal == TRUE, "Yes", "No") %>% 
+  as.character()
+
+rm(multilistings_legal)
+
+## if the listing is in multilistings AND is legal, the property is legal. 
+## if the listings is in multilistings AND is illegal, the property is illegal. 
+## the rest are unsure.
+
+plateau_property <- 
+  left_join(plateau_property, multilistings, by = "Property_ID") %>% 
+  select(-c(11))
+
+plateau_property$Legal <- 
+ifelse(!is.na(plateau_property$Legal.y), 
+       plateau_property$Legal.y, 
+       plateau_property$Legal.x)
+
+plateau_property <- select(plateau_property, -c(9,11))
+
+plateau_daily <- 
+  plateau_property %>%
+  inner_join(daily, ., by = "Property_ID")
 
 # private rooms / ghost hotels - illegal
