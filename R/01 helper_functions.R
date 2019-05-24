@@ -3,6 +3,19 @@
 library(tidyverse)
 library(sf)
 library(dplyr)
+library(extrafont)
+library(osmdata)
+library(sf)
+library(smoothr)
+library(tidycensus)
+library(tidyverse)
+library(tigris)
+library(tmap)
+library(tmaptools)
+library(units)
+library(dodgr)
+library(stplanr)
+
 
 ## multilistings unction
 strr_multilistings <- function(daily, EH = 2, PR = 3, listing_type, host_ID,

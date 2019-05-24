@@ -125,6 +125,7 @@ names (plateau_legal) <- c("ETBL_ID", "Property_ID", "Host_ID")
 
 # add a legal column
 plateau_property$Legal <- plateau_property$Property_ID %in% plateau_legal$Property_ID
+plateau_property$Legal <- ifelse(plateau_property$Legal == TRUE, "Yes", "Unsure")
 
 # add quebec establishment ID
 plateau_property <- left_join(plateau_property, plateau_legal)
@@ -136,9 +137,38 @@ plateau_daily <-
 
 # any property rented a lot - illegal
 
-# any entire home multi-listing - illegal
-plateau_daily <- strr_multilistings(plateau_daily)
+# determine entire home multi-listings
+listing_type <- "Entire home/apt"
+plateau_daily <- plateau_daily %>% 
+    group_by(Listing_Type, Host_ID, Date) %>% 
+    mutate(ML = ifelse(
+    n() >= 2 & !! listing_type == "Entire home/apt", TRUE, FALSE)) %>% 
+    ungroup()
 
-# however, one of each multilisting is legal - take the least frequently rented (most likely to be a primary residence)
+# the least frequently rented entire home multi listing is legal, the remainder are illegal
+multilistings <- plateau_daily %>% 
+    filter(Legal == FALSE, ML == TRUE) %>% 
+    group_by(Host_ID, Property_ID) %>% 
+    count(Status == "B") 
+
+names(multilistings) <- c("Host_ID", "Property_ID", "Blocked", "n")
+
+# as some operators have multiple listings blocked for the same number of days, take one value
+  # from each grouping
+multilistings_legal <- multilistings %>% 
+  filter(Blocked == TRUE) %>% 
+  inner_join(multilistings %>% 
+               filter(Blocked == TRUE) %>% 
+               group_by(Host_ID) %>% 
+               summarise(n = max(n))) %>% 
+  select(c(1,2)) %>% 
+  group_by(Host_ID) %>% 
+  sample_n(1)
+
+multilistings <- multilistings %>%
+    filter(Blocked == TRUE) %>% 
+    select(-c(3,4))
+
+multilistings$Legal <- multilistings$Property_ID %in% multilistings_legal$Property_ID
 
 # private rooms / ghost hotels - illegal
