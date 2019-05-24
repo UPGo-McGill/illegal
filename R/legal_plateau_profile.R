@@ -140,5 +140,15 @@ mean(plateau_legal$Average_Daily_Rate_USD, na.rm = TRUE)
 mean(plateau_legal$Annual_Revenue_LTM_USD, na.rm = TRUE)
 
 # 2C Average LTM income per host
-plateau_legal_grouped <- plateau_legal %>% 
-  group_by(Host_ID)
+plateau_legal_grouped <- plateau_legal %>%
+  group_by(Host_ID) %>% 
+  summarise(AvgAnnual = mean(Annual_Revenue_LTM_USD))
+
+ggplot(plateau_legal_grouped) +
+  geom_point(mapping = aes(x = Host_ID, y = AvgAnnual), 
+           stat = "identity")
+
+mean(plateau_legal_grouped$AvgAnnual, na.rm = TRUE)
+
+plateau_legal_grouped %>% 
+  summarise(maxAnnual = max(AvgAnnual))
