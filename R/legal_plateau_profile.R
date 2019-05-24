@@ -25,16 +25,16 @@ names(property) <-
   c("Property_ID", "Host_ID", "Listing_Title", "Property_Type",
     "Listing_Type", "Created", "Scraped", "Country", "State", "City",
     "Zipcode", "Neighborhood", "MSA", "Currency_Native",
-    "Average_Daily_Rate_(USD)", "Average_Daily_Rate_(Native)",
-    "Annual_Revenue_LTM_(USD)", "Annual_Revenue_LTM_(Native)",
+    "Average_Daily_Rate_USD", "Average_Daily_Rate_Native",
+    "Annual_Revenue_LTM_USD", "Annual_Revenue_LTM_Native",
     "Occupancy_Rate_LTM", "Number_of_Bookings_LTM", "Number_of_Reviews",
     "Bedrooms", "Bathrooms", "Max_Guests", "Calendar_Last_Updated",
-    "Response_Rate", "Response_Time_(min)", "Superhost",
-    "Cancellation_Policy", "Security_Deposit_(USD)",
-    "Security_Deposit_(Native)", "Cleaning_Fee_(USD)",
-    "Cleaning_Fee_(Native)", "Extra_People_Fee_(USD)",
-    "Extra_People_Fee_(Native)", "Published_Nightly_Rate_(USD)",
-    "Published_Monthly_Rate_(USD)", "Published_Weekly_Rate_(USD)",
+    "Response_Rate", "Response_Time_min", "Superhost",
+    "Cancellation_Policy", "Security_Deposit_USD",
+    "Security_Deposit_Native", "Cleaning_Fee_USD",
+    "Cleaning_Fee_Native", "Extra_People_Fee_USD",
+    "Extra_People_Fee_Native", "Published_Nightly_Rate_USD",
+    "Published_Monthly_Rate_USD", "Published_Weekly_Rate_USD",
     "Check-in_Time", "Checkout_Time", "Minimum_Stay",
     "Count_Reservation_Days_LTM", "Count_Available_Days_LTM",
     "Count_Blocked_Days_LTM", "Number_of_Photos", "Business_Ready",
@@ -93,5 +93,37 @@ plateau_legal <- filter(plateau_listings, Legal == TRUE)
 ## 1 Operators
 
 # 1A Number with 2+ listings
+host_distinct <- count(plateau_legal, Host_ID)
 
-host_multiple <- count(plateau_legal, Host_ID)
+host_2 <- host_distinct %>% filter(n >= 2)
+
+# 1B Number with 10+ listings
+host_11 <- host_distinct %>% filter(n > 10)
+
+# 1C Average number of listings per host
+summarise(host_2, avg = mean(n))
+
+# 1D Max number of listings per host
+summarise(host_2, max = max(n))
+
+ggplot(data = host_2, aes(host_2$n)) + 
+  geom_histogram(binwidth = 1)
+
+# 1E Non-human names
+# Not sure how to do this
+
+# 1F Proportion of Superhosts
+plateau_legal <- as_tibble(plateau_legal)
+
+superhost <- plateau_legal %>% 
+  distinct(Host_ID, .keep_all = TRUE)
+
+superhost <- superhost %>% count(Superhost)
+
+# 1G Response rates and times
+summarise(plateau_legal, AvgRR = mean(Response_Rate))
+
+is.na(plateau_legal$Response_Time_min)
+
+plateau_legal %>%
+  summarise(AvgRT = mean(Response_Time_min))

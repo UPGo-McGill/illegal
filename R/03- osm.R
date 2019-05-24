@@ -13,6 +13,7 @@ plateau_streets <-
 
 plot(plateau_streets)
 
+## LEGAL STREETS PLATEAU
 candidate_streets <- plateau_streets %>%
   filter(str_detect(name, "Saint-Laurent") |
            str_detect(name, "Sherbrooke") |
@@ -21,34 +22,45 @@ candidate_streets <- plateau_streets %>%
            str_detect(name, "Mont-Royal Est")) %>% 
   select(name)
 
-plot(candidate_streets)
-
 st_denis <- 
   plateau_streets %>%
   filter(name == "Rue Saint-Denis")
-
-tm_shape(candidate_streets) +
-  tm_lines(col = "grey") +
-  tm_shape(st_denis[8,]) +
-  tm_lines(col = "red")
-
-## segments on st denis: 9, 12,13, 14, 15, 16, 22, 27, 28, 31, 32, 33, 29, 40, 41, 42
-
 st_laurent <- 
   plateau_streets %>%
-  filter(name == "Boulevard Saint-Laurent")
+  filter(str_detect(name, "Saint-Laurent"))
+sherbrooke <- 
+  plateau_streets %>%
+  filter(str_detect(name, "Sherbrooke"))
+
+## SELECT STREET SEGMENTS
+tm_shape(candidate_streets) +
+  tm_lines(col = "grey") +
+  tm_shape(st_denis[39,]) +
+  tm_lines(col = "red")
+# segments on st denis: 9, 12,13, 14, 15, 16, 22, 27, 28, 31, 32, 33, 39, 40, 41, 42
 
 tm_shape(candidate_streets) +
   tm_lines(col = "grey") +
-  tm_shape(st_laurent[21,]) +
+  tm_shape(st_laurent[9,]) +
   tm_lines(col = "red")
-
 # segments on st laurent: part of 9, and part of 11, 12
 
 
-plot(plateau_streets %>% filter(name == "Rue Saint-Denis"))
+st_denis_seg <- st_denis[c(9,12,13, 14, 15, 16, 22, 27, 28, 31, 32, 33, 39, 40, 41, 42),]
+st_laurent_seg <- st_laurent [c(9,11,12),]
+st_denis_seg <- st_union(st_denis_seg)
+st_laurent_seg <- st_union(st_laurent_seg)
 
-plateau_streets %>% filter(str_detect(name, "Sherbrooke"))
+## REMOVE EXTRA SEGMENT ST LAURENT
+#st_denis_seg <- st_union(st_denis)
+#st_denis_seg
+#sherbrooke_seg <- st_union(sherbrooke)
+#st_denis_sherbrooke <- st_intersects (st_denis_seg, sherbrooke)
+
+##BUFFER
+
+
+####
 
 plateau_dodgr <-
   dodgr_streetnet("plateau") %>%
