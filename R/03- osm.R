@@ -14,10 +14,14 @@ plateau_streets <-
 plot(plateau_streets)
 
 candidate_streets <- plateau_streets %>%
-  filter(name == "Boulevard Saint-Laurent" |
+  filter(str_detect(name, "Saint-Laurent") |
            str_detect(name, "Sherbrooke") |
-         name == "Avenue du Mont-Royal Est") %>% 
+           str_detect(name, "Gilford") |
+           str_detect(name, "Rue Saint-Denis") |
+           str_detect(name, "Mont-Royal Est")) %>% 
   select(name)
+
+plot(candidate_streets)
 
 st_denis <- 
   plateau_streets %>%
