@@ -1,3 +1,9 @@
+###### CREATE BUFFERS FOR ILLEGAL LISTINGS #####
+
+source("R/01 helper_functions.R")
+
+## Get OSM data
+
 plateau_roads <- 
   getbb("plateau-mont-royal montreal") %>% 
   opq() %>% 
@@ -10,8 +16,6 @@ plateau_streets <-
   st_as_sf() %>% 
   st_transform(26918) %>%
   select(osm_id, name, geometry)
-
-plot(plateau_streets)
 
 ## LEGAL STREETS PLATEAU
 candidate_streets <- plateau_streets %>%
