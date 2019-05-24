@@ -56,9 +56,13 @@ sherbrooke <-
   plateau_streets %>%
   filter(str_detect(name, "Sherbrooke"))
 sherbrooke <- st_union(sherbrooke)
+montroyal <- 
+  plateau_streets %>%
+  filter (name =="Avenue du Mont-Royal Est")
 
-st_l <- st_difference(st_laurent_seg, st_intersection(st_laurent_seg,sherbrooke))
-mapview(st_l)
+st_laurent_section <- st_difference(st_laurent_seg, sherbrooke) 
+st_laurent_section <- st_difference(st_laurent_section, montroyal)
+st_laurent_section <- st_cast(st_laurent_section, "LINESTRING")
 
 ##BUFFER
 st_denis_buff <-
