@@ -81,6 +81,8 @@ property <-
   mutate(Housing = ifelse(
     .data$Property_Type %in% housing_names, TRUE, FALSE))
 
+property <- filter(property, Housing == TRUE)
+
 ## import daily file
 daily <- read_csv("Data/Montreal_daily.csv")
 names(daily) <- c("Property_ID", "Date", "Status", "Booked_Date", "Price_USD",
@@ -196,8 +198,6 @@ multilistings[is.na(multilistings)] <- 0
 
 multilistings$n_available_reserved <- multilistings$n_available + multilistings$n_reserved
 
-multilistings <- select(multilistings, -c(3,4))
-
 multilistings_primary <- multilistings %>% 
   inner_join(multilistings %>% 
                group_by(Host_ID) %>% 
@@ -211,16 +211,20 @@ plateau_property$ML_primary <- plateau_property$Property_ID %in% multilistings_p
 # private rooms / ghost hotels
 
 # determine if legal using the following variables: permit, frequent, ML, ML_primary, GH
+  ## double check that this is producing the right results on monday
 plateau_property <- 
   plateau_property %>% 
   mutate(Legal = case_when(
+    Listing_Type == "Private room" ~ TRUE,
     Permit == TRUE ~ TRUE,
-    Frequent == TRUE ~ FALSE,
     ML_primary == TRUE ~ TRUE,
+    Frequent == TRUE ~ FALSE,
     ML == TRUE ~ FALSE,
     Frequent == FALSE & ML == FALSE ~ TRUE)) %>% 
     select(c(1:8, 10, 15, 9, 12:14, 11))
 
+plateau_property %>% 
+  filter(Legal == FALSE)
 # evaluate those active dec 31, 2018
 start_date <- "2018-12-31" %>% 
   as.Date()
@@ -230,5 +234,27 @@ plateau_property <- filter(plateau_property, .data$Created <= end_date)
 plateau_property <- filter(plateau_property, .data$Scraped >= start_date)
 
 plateau_property %>% 
-  filter(Legal == TRUE)
+  filter(Legal == FALSE)
 
+plateau_property %>% 
+  filter(Listing_Type == "Entire home/apt")
+
+# characteristics of primary multilistings 
+mean(multilistings_primary$n_available)
+multilistings_not_primary <- multilistings[!multilistings$Property_ID %in% multilistings_primary$Property_ID,]
+mean(multilistings_not_primary$n_available)
+  # this suggests that there is negligible difference between primary multilistings and the remainder
+
+# what if all multilistings are considered illegal?
+  ## needs to be updated on monday - something wrong
+plateau_property <- 
+  plateau_property %>% 
+  mutate(Legal = case_when(
+    Listing_Type == "Private room" ~ TRUE,
+    Permit == TRUE ~ TRUE,
+    ML == TRUE ~ FALSE,
+    ML_primary == TRUE ~ FALSE,
+    Frequent == TRUE ~ FALSE))
+
+view(plateau_property %>% 
+  filter(ML == TRUE, Legal == TRUE, Permit == FALSE))
