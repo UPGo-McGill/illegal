@@ -36,10 +36,10 @@ st_laurent <-
 
 tm_shape(candidate_streets) +
   tm_lines(col = "grey") +
-  tm_shape(st_laurent[7,]) +
+  tm_shape(st_laurent[21,]) +
   tm_lines(col = "red")
 
-# segments on st laurent
+# segments on st laurent: part of 9, and part of 11, 12
 
 
 plot(plateau_streets %>% filter(name == "Rue Saint-Denis"))
