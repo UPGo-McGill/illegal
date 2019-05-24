@@ -1,3 +1,6 @@
+##### ADDRESSES PERMITS
+
+
 plateau_permit <- read_csv("Data/plateau_legal.csv") 
 plateau_address <- read_csv("Data/Addresses.csv")
 names (plateau_address) <- c("ETBL_ID", "Add_ID", "Add_Type", "Add_FR", "Add_EN", 
