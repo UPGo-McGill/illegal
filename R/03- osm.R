@@ -76,16 +76,22 @@ st_laurent_prop <- plateau_property_CRS[lengths(st_within(plateau_property_CRS, 
 st_denis_prop <- plateau_property_CRS[lengths(st_within(plateau_property_CRS, st_denis_buff))>0,]
 
 
+## permits variable
+permit <- plateau_property%>%
+  filter(Permit==TRUE)
+
 ## Maps
-tm_shape(candidate_streets)+
-  tm_lines(col = "grey") +
+tm_shape(plateau_buff)+
+  tm_fill("grey")+
+  tm_shape(candidate_streets)+
+  tm_lines(col = "black") +
   tm_shape(st_laurent_buff[])+
   tm_fill(col="red")+
   tm_shape(st_denis_buff[])+
   tm_fill(col="green")+
-  tm_shape(st_denis_prop[])+
-  tm_dots(size = 0.05)+
-  tm_shape(st_laurent_prop[])+
-  tm_dots(size = 0.05)
+#  tm_shape(st_denis_prop[])+
+ # tm_dots(size = 0.05)+
+  tm_shape(permit[])+
+  tm_dots(size = 0.05, col=)
 
-mapview(st_denis_prop)
+mapview(permit)
