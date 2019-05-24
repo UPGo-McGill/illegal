@@ -4,7 +4,7 @@ source("R/01 helper_functions.R")
 
 ## import plateau dataset
 
-montreal <- read_sf(dsn = ".", layer = "plateau") %>%
+montreal <- read_sf(dsn = "data", layer = "plateau") %>%
   st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326) %>%
   st_transform(3347)
 
