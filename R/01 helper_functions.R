@@ -15,6 +15,7 @@ library(tmaptools)
 library(units)
 library(dodgr)
 library(stplanr)
+library(mapview)
 
 
 ## multilistings unction
