@@ -40,15 +40,18 @@ st_laurent <-
 
 tm_shape(candidate_streets) +
   tm_lines(col = "grey") +
-  tm_shape(st_laurent[21,]) +
+  tm_shape(st_laurent[11,]) +
   tm_lines(col = "red")
 
+st_union(candidate_streets(row(11)))
 # segments on st laurent: part of 9, and part of 11, 12
 
-
 plot(plateau_streets %>% filter(name == "Rue Saint-Denis"))
-
 plateau_streets %>% filter(str_detect(name, "Sherbrooke"))
+
+
+
+####
 
 plateau_dodgr <-
   dodgr_streetnet("plateau") %>%
