@@ -220,3 +220,15 @@ plateau_property <-
     ML == TRUE ~ FALSE,
     Frequent == FALSE & ML == FALSE ~ TRUE)) %>% 
     select(c(1:8, 10, 15, 9, 12:14, 11))
+
+# evaluate those active dec 31, 2018
+start_date <- "2018-12-31" %>% 
+  as.Date()
+end_date <- "2018-12-31" %>% 
+  as.Date()
+plateau_property <- filter(plateau_property, .data$Created <= end_date)
+plateau_property <- filter(plateau_property, .data$Scraped >= start_date)
+
+plateau_property %>% 
+  filter(Legal == TRUE)
+
