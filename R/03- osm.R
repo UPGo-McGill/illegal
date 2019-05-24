@@ -28,14 +28,11 @@ st_denis <-
 st_laurent <- 
   plateau_streets %>%
   filter(str_detect(name, "Saint-Laurent"))
-sherbrooke <- 
-  plateau_streets %>%
-  filter(str_detect(name, "Sherbrooke"))
 
 ## SELECT STREET SEGMENTS
 tm_shape(candidate_streets) +
   tm_lines(col = "grey") +
-  tm_shape(st_denis[39,]) +
+  tm_shape(st_l[7,]) +
   tm_lines(col = "red")
 # segments on st denis: 9, 12,13, 14, 15, 16, 22, 27, 28, 31, 32, 33, 39, 40, 41, 42
 
@@ -45,19 +42,32 @@ tm_shape(candidate_streets) +
   tm_lines(col = "red")
 # segments on st laurent: part of 9, and part of 11, 12
 
-
-st_denis_seg <- st_denis[c(9,12,13, 14, 15, 16, 22, 27, 28, 31, 32, 33, 39, 40, 41, 42),]
-st_laurent_seg <- st_laurent [c(9,11,12),]
-st_denis_seg <- st_union(st_denis_seg)
-st_laurent_seg <- st_union(st_laurent_seg)
+st_denis_seg <- st_denis[c(9,12,13, 14, 15, 16, 22, 27, 28, 31, 32, 33, 39, 40, 41, 42),]%>%
+  st_union()
+st_laurent_seg <- st_laurent [c(9,11,12),] %>%
+  st_union()
 
 ## REMOVE EXTRA SEGMENT ST LAURENT
 #st_denis_seg <- st_union(st_denis)
 #st_denis_seg
 #sherbrooke_seg <- st_union(sherbrooke)
-#st_denis_sherbrooke <- st_intersects (st_denis_seg, sherbrooke)
+
+sherbrooke <- 
+  plateau_streets %>%
+  filter(str_detect(name, "Sherbrooke"))
+sherbrooke <- st_union(sherbrooke)
+
+st_l <- st_difference(st_laurent_seg, st_intersection(st_laurent_seg,sherbrooke))
+mapview(st_l)
 
 ##BUFFER
+st_denis_buff <-
+  st_denis_seg %>%
+  st_buffer(200)
+
+st_laurent_buff <-
+  st_laurent_seg %>%
+  st_buffer(200)
 
 
 ####
