@@ -58,24 +58,29 @@ sherbrooke <-
 sherbrooke <- st_union(sherbrooke)
 montroyal <- 
   plateau_streets %>%
-  filter (name =="Avenue du Mont-Royal Est")
+  filter (str_detect(name, "Mont-Royal"))
 
+## Differece
 st_laurent_section <- st_laurent_seg %>%
   st_difference(sherbrooke)%>%
   st_difference(montroyal) %>%
   st_cast("LINESTRING")
 
-st_difference(st_laurent_seg, sherbrooke) 
-st_laurent_section2 <- st_difference(st_laurent_section, montroyal)
-st_laurent_section <- st_cast(st_laurent_section, "LINESTRING")
-st_laurent_section2 <- st_cast(st_laurent_section2, "LINESTRING")
-st_laurent_legal <- st_laurent_section [c(9,11,12),] %>%
-plot(st_laurent_section)
 
 tm_shape(candidate_streets) +
   tm_lines(col = "grey") +
-  tm_shape(st_laurent_section[1,]) +
+  tm_shape(st_laurent_section[8]) +
   tm_lines(col = "red")
+
+##3, 4, 5
+
+
+st_difference(st_laurent_seg, sherbrooke) 
+st_laurent_section2 <- st_difference(st_laurent_seg, montroyal)
+st_laurent_section <- st_cast(st_laurent_section, "LINESTRING")
+st_laurent_section2 <- st_cast(st_laurent_section2, "LINESTRING")
+st_laurent_legal <- st_laurent_section [c(9,11,12),]
+plot(st_laurent_section2)
 
 
 ##BUFFER
