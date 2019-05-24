@@ -17,7 +17,8 @@ plateau_streets <-
   st_transform(26918) %>%
   select(osm_id, name, geometry)
 
-## LEGAL STREETS PLATEAU
+## STREETS PLATEAU
+
 candidate_streets <- plateau_streets %>%
   filter(str_detect(name, "Saint-Laurent") |
            str_detect(name, "Sherbrooke") |
@@ -26,7 +27,6 @@ candidate_streets <- plateau_streets %>%
            str_detect(name, "Mont-Royal Est")) %>% 
   select(name)
 
-## STREET OBJECTS
 st_denis <- 
   plateau_streets %>%
   filter(name == "Rue Saint-Denis")
@@ -61,12 +61,10 @@ st_laurent_legal <- st_laurent_section[c(3,4,5),] %>%
   st_union()
 
 ##BUFFERS ST LAURENT, ST DENIS (200m)
-st_denis_buff <-
-  st_denis_seg %>%
+st_denis_buff <-  st_denis_seg %>%
   st_buffer(200)
 
-st_laurent_buff <-
-  st_laurent_legal %>%
+st_laurent_buff <-  st_laurent_legal %>%
   st_buffer(200)
 
 # View buffers
@@ -76,4 +74,3 @@ tm_shape(candidate_streets) +
   tm_fill(col="red")+
   tm_shape(st_denis_buff[])+
   tm_fill(col="green")
-
