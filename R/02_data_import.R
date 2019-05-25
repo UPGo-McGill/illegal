@@ -82,6 +82,12 @@ daily <-
          Date <= "2018-12-31")
 
 
+## Join property and daily file
+
+daily <- inner_join(daily, st_drop_geometry(property), by = "Property_ID") %>% 
+  select(Property_ID, Date, Status, Price, Host_ID, Listing_Type)
+
+
 ## Import legal permitted Plateau listings and add permit columns to property
 
 permit <- read_csv("data/plateau_legal.csv") %>%
@@ -93,42 +99,21 @@ property <-
   left_join(permit)
 
 
+## Find FREH listings
+
+property <- 
+  daily %>%
+  group_by(Property_ID) %>% 
+  summarize(
+    n_reserved = sum(Status == "R"),
+    n_available = sum(Status != "B"),
+    FREH = if_else(
+      first(Listing_Type) == "Entire home/apt" & sum(Status == "R") >= 90 &
+        sum(Status != "B") >= 183, TRUE, FALSE)) %>% 
+  inner_join(property, .)
 
 
 
-
-
-
-
-# join property and daily file
-daily <- 
-  property %>%
-  inner_join(daily, ., by = "Property_ID")
-
-# find those frequently rented/available 
-available <- daily %>% 
-            group_by(Host_ID, Property_ID) %>% 
-            count(Status == "A")
-names(available) <- c("Host_ID", "Property_ID", "Available", "n_available")
-available <-
-  filter(available, Available == TRUE) %>% 
-  select(-c(3))
-
-reserved <- daily %>% 
-            group_by(Host_ID, Property_ID) %>% 
-            count(Status == "R")
-names(reserved) <- c("Host_ID", "Property_ID", "Reserved", "n_reserved")
-reserved <-
-  filter(reserved, Reserved == TRUE) %>% 
-  select(-c(3))
-
-frequent <- merge(available, reserved, by = c("Property_ID", "Host_ID"), all = TRUE)
-rm(available, reserved)
-
-frequent <- frequent %>% 
-  filter(n_available >=183 & n_reserved >= 90) 
-
-property$Frequent <- property$Property_ID %in% frequent$Property_ID
 
 # entire home multi-listings
 listing_type <- "Entire home/apt"
