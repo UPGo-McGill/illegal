@@ -3,4 +3,5 @@
 .RData
 .Ruserdata
 *.Rproj
-Data/Montreal_daily.csv
+data/Montreal_daily.csv
+data/Montreal_property.csv

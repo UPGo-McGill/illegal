@@ -1,22 +1,26 @@
 ############### DATA IMPORT ##################
 
-source("R/01 helper_functions.R")
+## Load helpers
 
-## import plateau dataset
+source("R/01_helper_functions.R")
 
-montreal <- read_sf(dsn = "data", layer = "plateau") %>%
-  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326) %>%
-  st_transform(3347)
+## Import Montreal boroughs
 
-plateau <- filter(montreal, CODEID=="5")
+montreal <-
+  read_sf(dsn = "data", layer = "plateau") %>%
+  st_transform(32618) %>% 
+  select(MUNID, CODEID, NOM, geometry)
 
-plateau_buff <-
-  plateau %>%
-  summarize(geometry = st_union(geometry)) %>% 
-  st_buffer(200)
+plateau <-
+  suppressWarnings(montreal %>% 
+  filter(CODEID == "5") %>% 
+  st_cast("POLYGON"))
 
-## import airbnb property file
-property <- read_csv("Data/Montreal_property.csv")
+
+## Import private Airbnb property file
+
+property <-
+  read_csv("data/Montreal_property.csv")
 
 names(property) <-
   c("Property_ID", "Host_ID", "Listing_Title", "Property_Type",
