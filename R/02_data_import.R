@@ -113,24 +113,18 @@ property <-
   inner_join(property, .)
 
 
+## Find EH multi-listings
+
+daily <- strr_multilistings(daily, listing_type = Listing_Type,
+                            host_ID = Host_ID, date = Date)
+
+property <- 
+  daily %>%
+  group_by(Property_ID) %>% 
+  summarize(ML = ceiling(mean(ML))) %>% 
+  inner_join(property, .)
 
 
-# entire home multi-listings
-listing_type <- "Entire home/apt"
-daily <- daily %>% 
-    group_by(Listing_Type, Host_ID, Date) %>% 
-    mutate(ML = ifelse(
-    n() >= 2 & !! listing_type == "Entire home/apt", TRUE, FALSE)) %>% 
-    ungroup()
-
-multilistings <- select(daily, c(1,15)) %>% 
-  distinct()
-
-multilistings <- filter(multilistings, ML == TRUE)
-
-property$ML <- property$Property_ID %in% multilistings$Property_ID
-
-rm(multilistings)
 
 # least frequently rented multi-listing
 multilistings_available <- daily %>% 
