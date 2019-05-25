@@ -69,19 +69,17 @@ st_laurent_buff <-  st_laurent_legal %>%
 
 
 ## Properties within St Laurent & St Denis Buffers
-plateau_property_CRS <- plateau_property%>%
-  st_transform(26918)
 
-st_laurent_prop <- plateau_property_CRS[lengths(st_within(plateau_property_CRS, st_laurent_buff))>0,]
-st_denis_prop <- plateau_property_CRS[lengths(st_within(plateau_property_CRS, st_denis_buff))>0,]
+st_laurent_prop <property[lengths(st_within(property_CRS, st_laurent_buff))>0,]
+st_denis_prop <- property[lengths(st_within(property_CRS, st_denis_buff))>0,]
 
 
 ## permits variable
-permit <- plateau_property%>%
+permit <- property%>%
   filter(Permit==TRUE)
 
 ## Maps
-tm_shape(plateau_buff)+
+tm_shape(st_buffer(plateau,200))+
   tm_fill("grey")+
   tm_shape(candidate_streets)+
   tm_lines(col = "black") +

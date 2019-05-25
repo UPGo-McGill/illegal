@@ -1,8 +1,8 @@
 ##### ADDRESSES PERMITS
 
 
-plateau_permit <- read_csv("Data/plateau_legal.csv") 
-plateau_address <- read_csv("Data/Addresses.csv")
+plateau_permit <- read_csv("Ddta/plateau_legal.csv") 
+plateau_address <- read_csv("data/Addresses.csv")
 names (plateau_address) <- c("ETBL_ID", "Add_ID", "Add_Type", "Add_FR", "Add_EN", 
                 "Add_Princ", "Address", "Municipality", "Province",
                 "Country", "Postal_Code", "Latitude", "Longitude")
