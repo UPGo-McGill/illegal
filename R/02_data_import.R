@@ -126,45 +126,19 @@ property <-
 
 
 
-# least frequently rented multi-listing
-multilistings_available <- daily %>% 
-  filter(ML == TRUE) %>% 
-  group_by(Host_ID, Property_ID) %>% 
-  count(Status == "A") 
-names(multilistings_available) <- c("Host_ID", "Property_ID", "Available", "n_available")
-multilistings_available <-
-  filter(multilistings_available, Available == TRUE) %>% 
-  select(-c(3))
+## Identify the least frequently rented multi-listing
 
-multilistings_reserved <- daily %>% 
-  filter(ML == TRUE) %>% 
-  group_by(Host_ID, Property_ID) %>% 
-  count(Status == "R") 
-names(multilistings_reserved) <- c("Host_ID", "Property_ID", "Reserved", "n_reserved")
-multilistings_reserved <-
-  filter(multilistings_reserved, Reserved == TRUE) %>% 
-  select(-c(3))
-
-multilistings <- merge(multilistings_available, multilistings_reserved, by = c("Host_ID", "Property_ID"), all = TRUE)
-rm(multilistings_available, multilistings_reserved)
-
-names(multilistings) <- c("Host_ID", "Property_ID", "n_available", "n_reserved")
-
-multilistings[is.na(multilistings)] <- 0
-
-multilistings$n_available_reserved <- multilistings$n_available + multilistings$n_reserved
-
-multilistings_primary <- multilistings %>% 
-  inner_join(multilistings %>% 
-               group_by(Host_ID) %>% 
-               summarise(n = min(n_available_reserved))) %>% 
-  select(c(1,2)) %>% 
+property <- 
+  property %>% 
   group_by(Host_ID) %>% 
-  sample_n(1)
+  mutate(LFRML = case_when(
+    ML * n_available == min(ML * n_available) ~ TRUE,
+    ML * n_available == 0                     ~ FALSE,
+    TRUE                                      ~ FALSE))
+         
 
-property$ML_primary <- property$Property_ID %in% multilistings_primary$Property_ID
+# private  rooms / ghost hotels
 
-# private rooms / ghost hotels
 
 # determine if legal using the following variables: permit, frequent, ML, ML_primary, GH
   ## double check that this is producing the right results on monday
