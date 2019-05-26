@@ -121,9 +121,8 @@ daily <- strr_multilistings(daily, listing_type = Listing_Type,
 property <- 
   daily %>%
   group_by(Property_ID) %>% 
-  summarize(ML = ceiling(mean(ML))) %>% 
+  summarize(ML = as.logical(ceiling(mean(ML)))) %>% 
   inner_join(property, .)
-
 
 
 ## Identify the least frequently rented multi-listing
@@ -132,9 +131,9 @@ property <-
   property %>% 
   group_by(Host_ID) %>% 
   mutate(LFRML = case_when(
-    ML * n_available == min(ML * n_available) ~ TRUE,
-    ML * n_available == 0                     ~ FALSE,
-    TRUE                                      ~ FALSE))
+    ML == FALSE                     ~ FALSE,
+    n_available == min(n_available) ~ TRUE,
+    TRUE                            ~ FALSE))
          
 
 # private  rooms / ghost hotels
