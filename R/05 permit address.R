@@ -14,10 +14,24 @@ plateau_address <- inner_join(st_drop_geometry(property), plateau_address) %>%
   st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326) %>%
   st_transform(26918)
 
+## Number of listings with permits on St Denis and St Laurent
 
+plateau_address %>%
+  filter(str_detect(Address, "Saint-Laurent"))
 
+plateau_address %>%
+  filter(str_detect(Address, "Saint-Denis"))%>%
 
-tm_shape(plateau_address[])+
-  tm_dots(size = 0.05, col="green")+
-  tm_shape(permit[])+
+## Map with locations of property with permits (red = airbnb aprox locations
+## blue = permit data actual locations)
+
+tm_shape(st_buffer(plateau,200))+
+  tm_borders("black")+
+  tm_shape(candidate_streets)+
+  tm_lines(col = "black") +
+  tm_shape(plateau_streets)+
+  tm_lines(col="grey")+
+  tm_shape(plateau_address[])+
+  tm_dots(size = 0.05, col="blue")+
+  tm_shape(filter(property, Permit==TRUE))+
   tm_dots(size = 0.05, col="red")
