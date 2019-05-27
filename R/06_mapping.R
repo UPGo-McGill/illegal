@@ -118,7 +118,7 @@ tm_shape(st_buffer(plateau, 200)) +
   tm_compass()
 
 # Housing loss
-# Illegal FREH + ghost hotels + legal FREH
+# FREH + ghost hotels 
 tm_shape(st_buffer(plateau, 200)) +
   tm_borders(lwd = 1) + 
   tm_shape(plateau_streets)+
@@ -128,9 +128,9 @@ tm_shape(st_buffer(plateau, 200)) +
   tm_shape(plateau) +
   tm_borders(lwd = 2) +
   tm_shape(filter(property, FREH == TRUE))+
-  tm_dots(col = "Legal", palette = c("#72001a", "blue")) +
+  tm_dots(col = "Legal", palette = c("#72001a", "blue"), legend.show = FALSE) +
+  tm_shape(filter(property, GH == TRUE))+
+  tm_dots(col = "Legal", palette = c(palette = c("#72001a", "blue"))) +
   tm_layout(legend.position = c("left", "bottom"),
             frame = FALSE) +
   tm_compass()
-
-
