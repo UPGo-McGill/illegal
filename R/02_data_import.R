@@ -186,9 +186,9 @@ rm(GH_list)
 property <- 
   property %>%   
   mutate(Legal = case_when(
-    Listing_Type == "Private room" ~ TRUE,
     Permit == TRUE                 ~ TRUE,
     GH == TRUE                     ~ FALSE,
+    Listing_Type == "Private room" ~ TRUE,
     FREH == TRUE                   ~ FALSE,
     LFRML == TRUE                  ~ TRUE,
     ML == TRUE                     ~ FALSE,
