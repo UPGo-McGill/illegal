@@ -136,21 +136,28 @@ property <-
     TRUE                            ~ FALSE))
          
 
-# private  rooms / ghost hotels
+# Private  rooms / ghost hotels
 
 
-# determine if legal using the following variables: permit, frequent, ML, ML_primary, GH
-  ## double check that this is producing the right results on monday
+
+# Determine legality
+
 property <- 
-  property %>% 
+  property %>%   
   mutate(Legal = case_when(
     Listing_Type == "Private room" ~ TRUE,
-    Permit == TRUE ~ TRUE,
-    ML_primary == TRUE ~ TRUE,
-    Frequent == TRUE ~ FALSE,
-    ML == TRUE ~ FALSE,
-    Frequent == FALSE & ML == FALSE ~ TRUE)) %>% 
-    select(c(1:8, 10, 15, 9, 12:14, 11))
+    Permit == TRUE                 ~ TRUE,
+    FREH == TRUE                   ~ FALSE,
+    LFRML == TRUE                  ~ TRUE,
+    ML == TRUE                     ~ FALSE,
+    TRUE                           ~ TRUE))
+
+
+
+
+
+
+
 
 property %>% 
   filter(Legal == FALSE)
