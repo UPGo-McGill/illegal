@@ -10,7 +10,6 @@ legal_hosts <- legal %>% count(Host_ID)
 illegal <- property %>% filter(Legal == FALSE)
 illegal_hosts <- illegal %>% count(Host_ID)
 
-### Data Analysis
 ## 1 Operators
 
 # 1A Number with 2+ listings
