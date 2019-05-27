@@ -151,38 +151,34 @@ property <-
     FALSE, LFRML)) %>% 
   ungroup()
 
-property %>% 
+property <- 
+  property %>% 
   group_by(Host_ID, Listing_Type) %>% 
+  mutate(prob = sample(0:10000, n(), replace = TRUE),
+         LFRML = if_else(
+           sum(LFRML) > 1 & prob != max(prob), FALSE, LFRML)) %>% 
+  select(-prob)
   
 
-
-property %>% 
-  st_drop_geometry() %>%
-  group_by(Host_ID) %>% 
-  filter(sum(LFRML) > 1) %>% 
-  summarize(n_LFRML = sum(LFRML))
+## Test for remaining LFRML ties:
+# property %>% st_drop_geometry() %>% group_by(Host_ID) %>%
+# filter(sum(LFRML) > 1) %>% summarize(n_LFRML = sum(LFRML))
 
 
-property %>% 
-  filter(Host_ID == 1761366 & LFRML == TRUE)
+# Identify ghost hotels
 
+GH_list <-
+  strr_ghost(property, Property_ID, Host_ID, Created, Scraped, "2018-01-01",
+           "2018-12-31", listing_type = Listing_Type) %>% 
+  pull(property_IDs) %>%
+  unlist() %>%
+  unique()
 
-property %>% 
-  filter(Listing_Type == "Entire home/apt") %>% 
-  group_by(Host_ID) %>% 
-  filter(length(ML) >= 2) %>% 
-  group_by(Host_ID) %>%
-  summarize(n = n())
+property <-
+  property %>% 
+  mutate(GH = if_else(Property_ID %in% GH_list, TRUE, FALSE))
 
-property %>% 
-  st_drop_geometry() %>% 
-  group_by(Host_ID, Listing_Type) %>%
-  summarize(n_LFRML = sum(LFRML)) %>% 
-  pull(n_LFRML)
-
-
-# Private  rooms / ghost hotels
-
+rm(GH_list)
 
 
 # Determine legality
@@ -192,6 +188,7 @@ property <-
   mutate(Legal = case_when(
     Listing_Type == "Private room" ~ TRUE,
     Permit == TRUE                 ~ TRUE,
+    GH == TRUE                     ~ FALSE,
     FREH == TRUE                   ~ FALSE,
     LFRML == TRUE                  ~ TRUE,
     ML == TRUE                     ~ FALSE,
