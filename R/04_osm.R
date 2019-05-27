@@ -85,17 +85,19 @@ permit <- property%>%
 ## Maps
 tm_shape(st_buffer(plateau,200))+
   tm_borders("black")+
+ # tm_shape(plateau_streets)+
+#  tm_lines(col="grey")+
   tm_shape(candidate_streets)+
   tm_lines(col = "black") +
-#  tm_shape(plateau_streets)+
-#  tm_lines(col="grey")+
   tm_shape(st_laurent_buff[])+
-  tm_fill(col="green")+
+  tm_fill(col="darkolivegreen3", alpha=.5)+
   tm_shape(st_denis_buff[])+
-  tm_fill(col="green")+
- tm_shape(st_denis_prop[])+
- tm_dots(size = 0.05)+
-#  tm_shape(filter(property, Permit == TRUE))+
-#  tm_dots(size = 0.03, col="black")
+  tm_fill(col="darkolivegreen3", alpha = .5)+
+  tm_shape(st_denis_prop[])+
+  tm_dots(size = 0.03, col="grey25")+
+  tm_shape(st_laurent_prop[])+
+  tm_dots(size = 0.03, col = "grey25")+
+  tm_shape(filter(property, Permit == TRUE))+
+  tm_dots(size = 0.05, col="blue")
 
 mapview(permit)
