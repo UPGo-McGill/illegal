@@ -12,7 +12,7 @@ library(stplanr)
 library(mapview)
 
 
-## multilistings unction
+## multilistings function
 strr_multilistings <- function(daily, EH = 2, PR = 3, listing_type, host_ID,
                                date, cores){
   
@@ -23,7 +23,7 @@ strr_multilistings <- function(daily, EH = 2, PR = 3, listing_type, host_ID,
   daily %>%
     group_by(!! listing_type, !! host_ID, !! date)  %>%
     mutate(ML = ifelse(
-      n() >= 2 & !! listing_type == "Entire home/apt", TRUE,
-      ifelse(n() >= 3 & !! listing_type == "Private room", TRUE, FALSE))) %>%
+      n() >= EH & !! listing_type == "Entire home/apt", TRUE,
+      ifelse(n() >= PR & !! listing_type == "Private room", TRUE, FALSE))) %>%
     ungroup()
 }
