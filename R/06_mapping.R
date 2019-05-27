@@ -2,6 +2,7 @@
 
 source("R/01_helper_functions.R")
 source("R/04_osm.R")
+source("R/05 permit address.R")
 
 palette <- c('#313695','#fee090','#d73027','#72001a')
 
@@ -38,7 +39,9 @@ tm_shape(st_buffer(plateau, 200)) +
   tm_shape(st_laurent_prop[])+
   tm_dots(size = 0.01, col = "black")+
   #tm_shape(filter(property, Permit == TRUE))+
-  #tm_dots(size = 0.05, col="blue")
+  #tm_dots(size = 0.05, col="blue")+ 
+  tm_layout(legend.position = c("left", "bottom"),
+  frame = FALSE) +
   tm_compass()
 
 ## St-L and St-D, will require permits: All entire homes on St Denis, St Laurent?
@@ -54,6 +57,8 @@ tm_shape(st_l_d)+
 #  tm_dots(size = 0.01, col="green")+
   tm_shape(plateau_streets)+
   tm_lines(col="grey")+
+  tm_layout(legend.position = c("left", "bottom"),
+            frame = FALSE) +
   tm_compass()
 
 
@@ -113,7 +118,7 @@ tm_shape(st_buffer(plateau, 200)) +
   tm_compass()
 
 # Housing loss
-# Illegal FREH + ghost hotels + legal FREH
+# FREH + ghost hotels 
 tm_shape(st_buffer(plateau, 200)) +
   tm_borders(lwd = 1) + 
   tm_shape(plateau_streets)+
@@ -123,9 +128,9 @@ tm_shape(st_buffer(plateau, 200)) +
   tm_shape(plateau) +
   tm_borders(lwd = 2) +
   tm_shape(filter(property, FREH == TRUE))+
-  tm_dots(col = "Legal", palette = c("#72001a", "blue")) +
+  tm_dots(col = "Legal", palette = c("#72001a", "blue"), legend.show = FALSE) +
+  tm_shape(filter(property, GH == TRUE))+
+  tm_dots(col = "Legal", palette = c(palette = c("#72001a", "blue"))) +
   tm_layout(legend.position = c("left", "bottom"),
             frame = FALSE) +
   tm_compass()
-
-

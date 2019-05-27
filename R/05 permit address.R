@@ -1,5 +1,12 @@
 ##### ADDRESSES PERMITS
 
+## Load helpers
+
+source("R/01_helper_functions.R")
+
+
+## Import Addresses and Locations from Permit Data
+
 plateau_address <- read_csv("data/Addresses.csv") %>%
   select(c(1,7,12,13))%>%
   set_names(c("ETBL_ID","Address","Latitude", "Longitude"))
@@ -25,13 +32,19 @@ plateau_address %>%
 ## Map with locations of property with permits (red = airbnb aprox locations
 ## blue = permit data actual locations)
 
-tm_shape(st_buffer(plateau,200))+
-  tm_borders("black")+
-  tm_shape(candidate_streets)+
-  tm_lines(col = "black") +
-  tm_shape(plateau_streets)+
-  tm_lines(col="grey")+
-  tm_shape(plateau_address)+
-  tm_dots(size = 0.05, col="blue")
-  tm_shape(filter(property, Permit==TRUE))+
-  tm_dots(size = 0.05, col="red")
+  
+  tm_shape(st_buffer(plateau, 200)) +
+    tm_borders(lwd = 1) + 
+    tm_shape(plateau_streets)+
+    tm_lines(col="grey", alpha = 0.5)+
+    tm_shape(candidate_streets)+
+    tm_lines(col = "grey", alpha = 0.5) +
+    tm_shape(plateau) +
+    tm_borders(lwd = 2) +
+    tm_shape(plateau_address)+
+    tm_dots(col = "#72001a") +
+    tm_shape(filter(property, Permit==TRUE))+
+    tm_dots(size = 0.05, col="red")+
+    tm_layout(legend.position = c("left", "bottom"),
+              frame = FALSE) +
+    tm_compass()

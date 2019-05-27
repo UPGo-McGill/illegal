@@ -11,6 +11,10 @@ library(dodgr)
 library(stplanr)
 library(mapview)
 
+## Census Mapper - Run Personal API
+# options(cancensus.api_key = "CensusMapper_a552c075421feb150db6cbf1d1707230")
+# options(cancensus.cache_path = "~/UPGo/illegal")
+
 
 ## Multilistings function
 
