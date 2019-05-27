@@ -57,39 +57,45 @@ st_laurent_section <- st_laurent_seg %>%
   st_cast("LINESTRING")%>%
   as.matrix()
 
-st_laurent_legal <- st_laurent_section[c(3,4,5),] %>%
+st_laurent_section <- st_laurent_section[c(3,4,5),] %>%
   st_union()
 
 ##BUFFERS ST LAURENT, ST DENIS (200m)
 st_denis_buff <-  st_denis_seg %>%
   st_buffer(200)
 
-st_laurent_buff <-  st_laurent_legal %>%
+st_laurent_buff <-  st_laurent_section %>%
   st_buffer(200)
 
 
 ## Properties within St Laurent & St Denis Buffers
+property_CRS <- 
+  property %>%
+  st_as_sf() %>% 
+  st_transform(26918)
 
-st_laurent_prop <property[lengths(st_within(property_CRS, st_laurent_buff))>0,]
+st_laurent_prop <- property[lengths(st_within(property_CRS, st_laurent_buff))>0,]
 st_denis_prop <- property[lengths(st_within(property_CRS, st_denis_buff))>0,]
 
-
+## not needed anymore?
 ## permits variable
 permit <- property%>%
   filter(Permit==TRUE)
 
 ## Maps
 tm_shape(st_buffer(plateau,200))+
-  tm_fill("grey")+
+  tm_borders("black")+
   tm_shape(candidate_streets)+
   tm_lines(col = "black") +
+#  tm_shape(plateau_streets)+
+#  tm_lines(col="grey")+
   tm_shape(st_laurent_buff[])+
-  tm_fill(col="red")+
+  tm_fill(col="green")+
   tm_shape(st_denis_buff[])+
   tm_fill(col="green")+
-#  tm_shape(st_denis_prop[])+
- # tm_dots(size = 0.05)+
-  tm_shape(permit[])+
-  tm_dots(size = 0.05, col=)
+ tm_shape(st_denis_prop[])+
+ tm_dots(size = 0.05)+
+#  tm_shape(filter(property, Permit == TRUE))+
+#  tm_dots(size = 0.03, col="black")
 
 mapview(permit)
