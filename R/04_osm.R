@@ -85,8 +85,8 @@ permit <- property%>%
 ## Maps
 tm_shape(st_buffer(plateau,200))+
   tm_borders("black")+
- # tm_shape(plateau_streets)+
-#  tm_lines(col="grey")+
+  tm_shape(plateau_streets)+
+  tm_lines(col="grey")+
   tm_shape(candidate_streets)+
   tm_lines(col = "black") +
   tm_shape(st_laurent_buff[])+
