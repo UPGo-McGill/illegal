@@ -201,8 +201,7 @@ property <-
 DA <-
   get_census(
     dataset = 'CA16',regions=list(CMA="24462"), level = 'DA', 
-    geo_format = "sf") 
-DA <- DA %>%
+    geo_format = "sf") %>%
   st_transform(32618) 
 
 
