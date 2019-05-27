@@ -101,7 +101,7 @@ property <-
   left_join(permit)
 
 
-## Find FREH listings
+## Find FREH listings and revenue
 
 property <- 
   daily %>%
@@ -109,13 +109,14 @@ property <-
   summarize(
     n_reserved = sum(Status == "R"),
     n_available = sum(Status != "B"),
+    revenue = sum((Status == "R") * Price),
     FREH = if_else(
-      first(Listing_Type) == "Entire home/apt" & sum(Status == "R") >= 90 &
-        sum(Status != "B") >= 183, TRUE, FALSE)) %>% 
+      first(Listing_Type) == "Entire home/apt" & n_reserved >= 90 &
+        n_available >= 183, TRUE, FALSE)) %>% 
   inner_join(property, .)
 
 
-## Find EH multi-listings
+## Find multi-listings
 
 daily <- strr_multilistings(daily, listing_type = Listing_Type,
                             host_ID = Host_ID, date = Date)
@@ -131,12 +132,54 @@ property <-
 
 property <- 
   property %>% 
-  group_by(Host_ID) %>% 
+  group_by(Host_ID, Listing_Type) %>% 
   mutate(LFRML = case_when(
-    ML == FALSE                     ~ FALSE,
-    n_available == min(n_available) ~ TRUE,
-    TRUE                            ~ FALSE))
-         
+    Listing_Type != "Entire home/apt" ~ FALSE,
+    ML == FALSE                       ~ FALSE,
+    n_available == min(n_available)   ~ TRUE,
+    TRUE                              ~ FALSE)) %>% 
+  ungroup()
+  
+       
+## Resolve any LFRML ties with n_reserved and then random chance
+
+property <- 
+  property %>% 
+  group_by(Host_ID, Listing_Type) %>% 
+  mutate(LFRML = if_else(
+    sum(LFRML) > 1 & n_reserved != min(n_reserved),
+    FALSE, LFRML)) %>% 
+  ungroup()
+
+property %>% 
+  group_by(Host_ID, Listing_Type) %>% 
+  
+
+
+property %>% 
+  st_drop_geometry() %>%
+  group_by(Host_ID) %>% 
+  filter(sum(LFRML) > 1) %>% 
+  summarize(n_LFRML = sum(LFRML))
+
+
+property %>% 
+  filter(Host_ID == 1761366 & LFRML == TRUE)
+
+
+property %>% 
+  filter(Listing_Type == "Entire home/apt") %>% 
+  group_by(Host_ID) %>% 
+  filter(length(ML) >= 2) %>% 
+  group_by(Host_ID) %>%
+  summarize(n = n())
+
+property %>% 
+  st_drop_geometry() %>% 
+  group_by(Host_ID, Listing_Type) %>%
+  summarize(n_LFRML = sum(LFRML)) %>% 
+  pull(n_LFRML)
+
 
 # Private  rooms / ghost hotels
 
