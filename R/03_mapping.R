@@ -48,7 +48,24 @@ tm_shape(st_buffer(plateau, 200)) +
             frame = FALSE) +
   tm_compass()
 
+# Housing loss
+# Illegal FREH + ghost hotels + legal FREH
+tm_shape(st_buffer(plateau, 200)) +
+  tm_borders(lwd = 1, alpha = 0.5) + 
+  tm_shape(plateau) +
+  tm_borders(lwd = 2) +
+  tm_shape(filter(property, FREH == TRUE))+
+  tm_dots(col = "Legal", palette = c("#72001a", "blue")) +
+  tm_layout(legend.position = c("left", "bottom"),
+            frame = FALSE) +
+  tm_compass()
+
+
 # analysis - leaving this here until we finalize numbers
 property %>%   
-mean(filter(Legal == FALSE)$FREH)
-  
+sum(FREH)
+
+sum(property$FREH)
+
+property %>% 
+  filter(FREH == TRUE & Legal == FALSE)
