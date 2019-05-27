@@ -197,4 +197,12 @@ property <-
     ML == TRUE                     ~ FALSE,
     TRUE                           ~ TRUE))
 
+## Dissemination Area for Montreal CMA 
+DA <-
+  get_census(
+    dataset = 'CA16',regions=list(CMA="24462"), level = 'DA', 
+    geo_format = "sf") 
+DA <- DA %>%
+  st_transform(32618) 
+
 
