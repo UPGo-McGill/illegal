@@ -77,27 +77,57 @@ property_CRS <-
 st_laurent_prop <- property[lengths(st_within(property_CRS, st_laurent_buff))>0,]
 st_denis_prop <- property[lengths(st_within(property_CRS, st_denis_buff))>0,]
 
-## not needed anymore?
-## permits variable
-permit <- property%>%
-  filter(Permit==TRUE)
 
-## Maps
+st_l_d <- st_union(st_laurent_buff, st_denis_buff)
+
+## St-Denis/St-Laurent buffers and listings within buffers
 tm_shape(st_buffer(plateau,200))+
   tm_borders("black")+
-  tm_shape(plateau_streets)+
-  tm_lines(col="grey")+
+#  tm_shape(plateau_streets)+
+#  tm_lines(col="grey")+
   tm_shape(candidate_streets)+
   tm_lines(col = "black") +
   tm_shape(st_laurent_buff[])+
-  tm_fill(col="darkolivegreen3", alpha=.5)+
+  tm_fill(col="darkolivegreen3", alpha=.3)+
   tm_shape(st_denis_buff[])+
-  tm_fill(col="darkolivegreen3", alpha = .5)+
+  tm_fill(col="darkolivegreen3", alpha = .3)+
   tm_shape(st_denis_prop[])+
-  tm_dots(size = 0.03, col="grey25")+
+  tm_dots(size = 0.01, col="black")+
   tm_shape(st_laurent_prop[])+
-  tm_dots(size = 0.03, col = "grey25")+
+  tm_dots(size = 0.01, col = "black")+
   tm_shape(filter(property, Permit == TRUE))+
   tm_dots(size = 0.05, col="blue")
+
+
+## St-L and St-D, will require permits
+tm_shape(st_l_d)+
+  tm_fill(col="grey", alpha = .3)+
+  tm_shape(filter(st_denis_prop, Listing_Type=="Entire home/apt"))+
+    tm_dots(size = 0.01, col="blue")+
+  tm_shape(filter(st_denis_prop, Listing_Type=="Private room"))+
+    tm_dots(size = 0.01, col="green")+
+  tm_shape(filter(st_laurent_prop, Listing_Type=="Entire home/apt"))+
+  tm_dots(size = 0.01, col="blue")+
+  tm_shape(filter(st_laurent_prop, Listing_Type=="Private room"))+
+  tm_dots(size = 0.01, col="green")+
+  tm_layout(legend.position = c("left", "top"),frame = FALSE) +
+  tm_compass()
+  #tm_shape(plateau_streets)+
+  #tm_lines(col="grey")
+  #tm_shape(filter(property, Permit == TRUE))+
+  #tm_dots(size = 0.05, col="blue")+
+
+
+## Listings which will become illegal: All entire homes?
+tm_shape(st_buffer(plateau,200))+
+  tm_borders("black")+
+  #  tm_shape(plateau_streets)+
+  #  tm_lines(col="grey")+
+  tm_shape(filter(property,  Listing_Type == "Entire home/apt"&
+          Permit == FALSE))+
+  tm_dots(size = 0.05, col="blue")
+View(property)
+  
+  
 
 mapview(permit)

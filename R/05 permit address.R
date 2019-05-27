@@ -5,14 +5,18 @@ plateau_address <- read_csv("data/Addresses.csv") %>%
   set_names(c("ETBL_ID","Address","Latitude", "Longitude"))
 
 establishment_type <- read_csv("data/EstablishmentType.csv") %>%
-  select(c(1,4))%>%
-  set_names(c("ETBL_ID","Establishment_Type"))
+  select(c(1,3,4))%>%
+  set_names(c("ETBL_ID","ETBL_Code", "Establishment_Type"))
 plateau_address <- inner_join(plateau_address, establishment_type)
 rm(establishment_type)
 
 plateau_address <- inner_join(st_drop_geometry(property), plateau_address) %>%
   st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326) %>%
   st_transform(26918)
+
+plateau_address %>%
+  filter(ETBL_Code=="10813"& Listing_Type=="Entire home/apt")
+
 
 ## Number of listings with permits on St Denis and St Laurent
 
