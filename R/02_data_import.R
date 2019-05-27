@@ -72,13 +72,15 @@ daily <- read_csv("data/Montreal_daily.csv") %>%
 
 property <-
   property %>% 
-  filter(Property_ID %in% daily$Property_ID, Scraped >= "2018-01-01",
+  filter(Property_ID %in% daily$Property_ID,
+         Scraped >= "2018-01-01",
          Created <= "2018-12-31") %>% 
   st_join(st_buffer(plateau["geometry"], 200), join = st_within, left = FALSE)
 
 daily <- 
   daily %>% 
-  filter(Property_ID %in% property$Property_ID, Date >= "2018-01-01",
+  filter(Property_ID %in% property$Property_ID,
+         Date >= "2018-01-01",
          Date <= "2018-12-31")
 
 
