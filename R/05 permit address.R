@@ -14,10 +14,6 @@ plateau_address <- inner_join(st_drop_geometry(property), plateau_address) %>%
   st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326) %>%
   st_transform(26918)
 
-plateau_address %>%
-  filter(ETBL_Code=="10813"& Listing_Type=="Entire home/apt")
-
-
 ## Number of listings with permits on St Denis and St Laurent
 
 plateau_address %>%
@@ -35,7 +31,7 @@ tm_shape(st_buffer(plateau,200))+
   tm_lines(col = "black") +
   tm_shape(plateau_streets)+
   tm_lines(col="grey")+
-  tm_shape(plateau_address[])+
-  tm_dots(size = 0.05, col="blue")+
+  tm_shape(plateau_address)+
+  tm_dots(size = 0.05, col="blue")
   tm_shape(filter(property, Permit==TRUE))+
   tm_dots(size = 0.05, col="red")
