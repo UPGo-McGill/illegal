@@ -10,7 +10,7 @@ tm_shape(st_buffer(plateau, 200)) +
   tm_shape(plateau) +
   tm_borders(lwd = 2) +
   tm_shape(property)+
-  tm_dots(col = "Listing_Type", palette = palette) +
+  tm_dots(col = "Listing_Type", palette = palette, title = "Listing Type") +
   tm_layout(legend.position = c("left", "bottom"),
             frame = FALSE) +
   tm_compass()
@@ -21,7 +21,7 @@ tm_shape(st_buffer(plateau, 200)) +
   tm_shape(plateau) +
   tm_borders(lwd = 2) +
   tm_shape(property)+
-  tm_dots(col = "Legal", palette = palette) +
+  tm_dots(col = "Legal", palette =  c("#72001a", "#313695")) +
   tm_layout(legend.position = c("left", "bottom"),
             frame = FALSE) +
   tm_compass()
@@ -64,8 +64,6 @@ tm_shape(st_buffer(plateau, 200)) +
 # analysis - leaving this here until we finalize numbers
 property %>%   
 sum(FREH)
-
-sum(property$FREH)
 
 property %>% 
   filter(FREH == TRUE & Legal == FALSE)
