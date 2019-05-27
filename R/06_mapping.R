@@ -57,6 +57,8 @@ tm_shape(st_l_d)+
 #  tm_dots(size = 0.01, col="green")+
   tm_shape(plateau_streets)+
   tm_lines(col="grey")+
+  tm_shape(candidate_streets)+
+  tm_lines(col= "grey42")+
   tm_layout(legend.position = c("left", "bottom"),
             frame = FALSE) +
   tm_compass()
