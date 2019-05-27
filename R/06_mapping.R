@@ -5,13 +5,30 @@ source("R/04_osm.R")
 
 palette <- c('#313695','#fee090','#d73027','#72001a')
 
-## St-Denis/St-Laurent buffers and listings within buffers
-tm_shape(st_buffer(plateau,200))+
-  tm_borders("black")+
-  #  tm_shape(plateau_streets)+
-  #  tm_lines(col="grey")+
+## Exact location of permitted listings
+tm_shape(st_buffer(plateau, 200)) +
+  tm_borders(lwd = 1) + 
+  tm_shape(plateau_streets)+
+  tm_lines(col="grey", alpha = 0.5)+
   tm_shape(candidate_streets)+
-  tm_lines(col = "black") +
+  tm_lines(col = "grey", alpha = 0.5) +
+  tm_shape(plateau) +
+  tm_borders(lwd = 2) +
+  tm_shape(plateau_address)+
+  tm_dots(col = "#72001a") +
+  tm_layout(legend.position = c("left", "bottom"),
+            frame = FALSE) +
+  tm_compass()
+
+## St-Denis/St-Laurent buffers and listings within buffers
+tm_shape(st_buffer(plateau, 200)) +
+  tm_borders(lwd = 1) + 
+  tm_shape(plateau_streets)+
+  tm_lines(col="grey", alpha = 0.5)+
+  tm_shape(candidate_streets)+
+  tm_lines(col = "grey", alpha = 0.5) +
+  tm_shape(plateau) +
+  tm_borders(lwd = 2) +
   tm_shape(st_laurent_buff[])+
   tm_fill(col="darkolivegreen3", alpha=.3)+
   tm_shape(st_denis_buff[])+
@@ -20,27 +37,24 @@ tm_shape(st_buffer(plateau,200))+
   tm_dots(size = 0.01, col="black")+
   tm_shape(st_laurent_prop[])+
   tm_dots(size = 0.01, col = "black")+
-  tm_shape(filter(property, Permit == TRUE))+
-  tm_dots(size = 0.05, col="blue")
+  #tm_shape(filter(property, Permit == TRUE))+
+  #tm_dots(size = 0.05, col="blue")
+  tm_compass()
 
-
-## St-L and St-D, will require permits
+## St-L and St-D, will require permits: All entire homes on St Denis, St Laurent?
 tm_shape(st_l_d)+
   tm_fill(col="grey", alpha = .3)+
   tm_shape(filter(st_denis_prop, Listing_Type=="Entire home/apt"))+
   tm_dots(size = 0.01, col="blue")+
-  tm_shape(filter(st_denis_prop, Listing_Type=="Private room"))+
-  tm_dots(size = 0.01, col="green")+
+#  tm_shape(filter(st_denis_prop, Listing_Type=="Private room"))+
+#  tm_dots(size = 0.01, col="green")+
   tm_shape(filter(st_laurent_prop, Listing_Type=="Entire home/apt"))+
   tm_dots(size = 0.01, col="blue")+
-  tm_shape(filter(st_laurent_prop, Listing_Type=="Private room"))+
-  tm_dots(size = 0.01, col="green")+
-  tm_layout(legend.position = c("left", "top"),frame = FALSE) +
+#  tm_shape(filter(st_laurent_prop, Listing_Type=="Private room"))+
+#  tm_dots(size = 0.01, col="green")+
+  tm_shape(plateau_streets)+
+  tm_lines(col="grey")+
   tm_compass()
-#tm_shape(plateau_streets)+
-#tm_lines(col="grey")
-#tm_shape(filter(property, Permit == TRUE))+
-#tm_dots(size = 0.05, col="blue")+
 
 
 ## Listings which will become illegal: All entire homes?
