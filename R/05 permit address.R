@@ -1,15 +1,23 @@
 ##### ADDRESSES PERMITS
 
+plateau_address <- read_csv("data/Addresses.csv") %>%
+  select(c(1,7,12,13))%>%
+  set_names(c("ETBL_ID","Address","Latitude", "Longitude"))
 
-plateau_permit <- read_csv("Ddta/plateau_legal.csv") 
-plateau_address <- read_csv("data/Addresses.csv")
-names (plateau_address) <- c("ETBL_ID", "Add_ID", "Add_Type", "Add_FR", "Add_EN", 
-                "Add_Princ", "Address", "Municipality", "Province",
-                "Country", "Postal_Code", "Latitude", "Longitude")
-plateau_address <- plateau_address[,c(1,12,13)]
-plateau_address <- st_as_sf(plateau_address, coords = c("Longitude", "Latitude"), crs = 4326) %>%
+establishment_type <- read_csv("data/EstablishmentType.csv") %>%
+  select(c(1,4))%>%
+  set_names(c("ETBL_ID","Establishment_Type"))
+plateau_address <- inner_join(plateau_address, establishment_type)
+rm(establishment_type)
+
+plateau_address <- inner_join(st_drop_geometry(property), plateau_address) %>%
+  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326) %>%
   st_transform(26918)
 
 
 
-new <- st_join(permit, plateau_address)
+
+tm_shape(plateau_address[])+
+  tm_dots(size = 0.05, col="green")+
+  tm_shape(permit[])+
+  tm_dots(size = 0.05, col="red")
