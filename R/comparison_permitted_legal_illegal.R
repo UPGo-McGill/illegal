@@ -73,10 +73,10 @@ illegal %>%
 permitted %>% 
   summarise(AvgRR = mean(Response_Rate))
 
-## 2 Income
+## 2 Income (LEAVING OUT)
 
 # 2A Average listing price
-mean(plateau_legal$Average_Daily_Rate_USD, na.rm = TRUE)
+permitted %>% mean(Average_Daily_Rate_USD, na.rm = TRUE)
 
 # 2B Average LTM income per listing
 mean(plateau_legal$Annual_Revenue_LTM_USD, na.rm = TRUE)
@@ -98,33 +98,41 @@ plateau_legal_by_Host %>%
 
 
 ## 3 Listing type breakdown
-listing_type <- plateau_legal %>% count(Listing_Type)
+permitted %>% 
+  ungroup() %>% 
+  count(Listing_Type)
 
-listing_type <- mutate(listing_type, prop = n/210)
+legal %>% 
+  ungroup() %>% 
+  count(Listing_Type)
 
+illegal %>% 
+  ungroup() %>% 
+  count(Listing_Type)
 
 ## 4 Availability
-# 4A Average number of bookings 
-mean(plateau_legal$Number_of_Bookings_LTM, na.rm = TRUE)
+# 4A Average days reserved
+permitted %>% 
+  ungroup() %>% 
+  summarise(avg = mean(n_reserved))
 
-# 4B Average days R/A/B
-AvgR <- mean(plateau_legal$Count_Reservation_Days_LTM, na.rm = TRUE)
-AvgA <- mean(plateau_legal$Count_Available_Days_LTM, na.rm = TRUE)
-AvgB <- mean(plateau_legal$Count_Blocked_Days_LTM, na.rm = TRUE)
+legal %>% 
+  ungroup() %>% 
+  summarise(avg = mean(n_reserved))
 
-AvgOcc <- mean(plateau_legal$Occupancy_Rate_LTM, na.rm = TRUE)
+illegal %>% 
+  ungroup() %>% 
+  summarise(avg = mean(n_reserved))
 
-count(plateau_legal, Occupancy_Rate_LTM == 0)
+# 4B Average days reserved + available
+permitted %>% 
+  ungroup() %>% 
+  summarise(avg = mean(n_available))
 
+legal %>% 
+  ungroup() %>% 
+  summarise(avg = mean(n_available))
 
-## 5 Age of postings 
-plateau_legal <- mutate(plateau_legal, 
-                        Year_Created = substr(plateau_legal$Created, 1, 4))
-
-year_created <- plateau_legal %>% 
-  count(Year_Created) 
-
-ggplot(year_created) +
-  geom_histogram(mapping = aes(x = Year_Created, y = n), 
-                               bins = 7, stat = "identity")
-
+illegal %>% 
+  ungroup() %>% 
+  summarise(avg = mean(n_available))
