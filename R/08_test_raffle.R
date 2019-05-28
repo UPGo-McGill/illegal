@@ -15,8 +15,9 @@ DA_plateau <- DA[lengths(st_intersects(DA, plateau))>0,]
     tm_borders(col="black")+
     tm_shape(plateau)+
     tm_borders(col="red")+
-    tm_shape(st_laurent_buff)+
+    tm_shape(laurent_buff_50)+
     tm_fill(col="green", alpha = 0.4)+
     tm_shape(st_denis_buff)+
     tm_fill(col="green", alpha = 0.4)
     
+
