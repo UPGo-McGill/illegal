@@ -3,6 +3,6 @@
 .RData
 .Ruserdata
 *.Rproj
-data/Montreal_daily.csv
-data/Montreal_property.csv
+data/Montreal_daily_2019.csv
+data/Montreal_property_2019.csv
 R/analysis.R
