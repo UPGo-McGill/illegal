@@ -1,15 +1,10 @@
 ############### RUN RAFFLE ##################
 
 ## Load helpers
-
 source("R/01_helper_functions.R")
-source("R/07_str_raffle.R")
 
 ## Test Raffle
-
-             
 DA_plateau <- DA[lengths(st_intersects(DA, plateau))>0,]
-
 
   tm_shape(DA_plateau) +
     tm_borders(col="black")+
@@ -20,13 +15,12 @@ DA_plateau <- DA[lengths(st_intersects(DA, plateau))>0,]
     tm_shape(st_denis_buff)+
     tm_fill(col="green", alpha = 0.4)
 
-
 DA_plateau$GeoUID <- as.numeric(DA_plateau$GeoUID)
   
 outliers <- anti_join(st_drop_geometry(property), 
                       DA_plateau, 
                       by = c("winner" = "GeoUID")) %>% 
-  left_join(property)    
+            left_join(property)    
 
 tm_shape(DA_plateau) +
   tm_borders() + 
@@ -42,6 +36,7 @@ nrow(outliers)/nrow(anti_join(st_drop_geometry(property),
                   st_join(property, plateau, join = st_within, left = FALSE), 
                   by = "Property_ID"))
 
+<<<<<<< HEAD
 
 
 ## Random Subset
@@ -56,3 +51,12 @@ sampl_st_d <- st_denis_prop[c(704,825,776,525,410,1084,1134,1046,515,747,1123,90
 
   
   
+=======
+# Check if removing any with permits, and if so, that they are located outside of the plateau
+left_join(filter(outliers, Permit == TRUE), 
+          st_drop_geometry(plateau_address)) %>% 
+          select(1:2, 5, 20)
+
+
+
+>>>>>>> fdacc4934781b40e28ece23d32fa8bf89bad1bc0
