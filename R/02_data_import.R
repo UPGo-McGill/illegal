@@ -27,11 +27,11 @@ DA <-
 ## Import private Airbnb files
 
 property <-
-  read_csv("data/Montreal_property.csv") %>%
-  select(c(1:7, 50:51)) %>% 
+  read_csv("data/Montreal_property_2019.csv") %>%
+  select(c(1:6, 8:9, 50)) %>% 
   set_names(c(
-    "Property_ID", "Host_ID", "Listing_Title", "Property_Type", "Listing_Type",
-    "Created", "Scraped", "Latitude", "Longitude")) %>% 
+    "Property_ID", "Listing_Title", "Property_Type", "Listing_Type",
+    "Created", "Scraped", "Latitude", "Longitude", "Host_ID")) %>% 
   arrange(Property_ID) %>% 
   st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326) %>%
   st_transform(32618) %>% 
@@ -67,10 +67,13 @@ property <-
     "Private room in cottage", "Private room in tiny house",
     "Entire casa particular", ""))
 
-daily <- read_csv("data/Montreal_daily.csv") %>% 
-  set_names(c("Property_ID", "Date", "Status", "Booked_Date", "Price",
-              "Reservation_ID")) %>% 
-  select(c(1:3, 5)) %>% 
+daily <- read_csv("data/Montreal_daily_2019.csv", col_types = cols(
+  Property_ID = col_character(),
+  Date = col_date(format = ""),
+  Status = col_character(),
+  Price = col_double(),
+  Airbnb = col_character(),
+  Homeaway = col_character())) %>% 
   arrange(Property_ID, Date)
 
 
