@@ -8,5 +8,15 @@ source("R/07_str_raffle.R")
 ## Test Raffle
 
              
-tst_DA <- DA[lengths(st_within(DA, plateau))>0,]
-plot(tst_DA)
+DA_plateau <- DA[lengths(st_intersects(DA, plateau))>0,]
+
+
+  tm_shape(DA_plateau) +
+    tm_borders(col="black")+
+    tm_shape(plateau)+
+    tm_borders(col="red")+
+    tm_shape(st_laurent_buff)+
+    tm_fill(col="green", alpha = 0.4)+
+    tm_shape(st_denis_buff)+
+    tm_fill(col="green", alpha = 0.4)
+    
