@@ -74,14 +74,16 @@ daily <- read_csv("data/Montreal_daily.csv") %>%
   arrange(Property_ID, Date)
 
 
-## Trim listings to the Plateau in 2018
+## Trim listings to the Plateau in 2018 and add raffle results
 
 property <-
   property %>% 
   filter(Property_ID %in% daily$Property_ID,
          Scraped >= "2018-01-01",
          Created <= "2018-12-31") %>% 
-  st_join(st_buffer(plateau["geometry"], 200), join = st_within, left = FALSE)
+  st_join(st_buffer(plateau["geometry"], 200),
+          join = st_within, left = FALSE) %>% 
+  left_join(read_csv("data/raffle.csv"))
 
 daily <- 
   daily %>% 
