@@ -5,7 +5,7 @@
 source("R/01_helper_functions.R")
 
 
-## Import Montreal boroughs
+## Import Montreal geometries
 
 montreal <-
   read_sf(dsn = "data", layer = "plateau") %>%
@@ -16,6 +16,12 @@ plateau <-
   suppressWarnings(montreal %>% 
   filter(CODEID == "5") %>% 
   st_cast("POLYGON"))
+
+DA <-
+  get_census(
+    dataset = 'CA16',regions=list(CMA="24462"), level = 'DA', 
+    geo_format = "sf") %>%
+  st_transform(32618) 
 
 
 ## Import private Airbnb files
@@ -193,12 +199,5 @@ property <-
     LFRML == TRUE                  ~ TRUE,
     ML == TRUE                     ~ FALSE,
     TRUE                           ~ TRUE))
-
-## Dissemination Area for Montreal CMA 
-DA <-
-  get_census(
-    dataset = 'CA16',regions=list(CMA="24462"), level = 'DA', 
-    geo_format = "sf") %>%
-  st_transform(32618) 
 
 
