@@ -51,7 +51,7 @@ tm_shape(st_l_d)+
   tm_dots(size = 0.01, col="blue")+
 #  tm_shape(filter(st_denis_prop, Listing_Type=="Private room"))+
 #  tm_dots(size = 0.01, col="green")+
-  tm_shape(filter(st_laurent_prop, Listing_Type=="Entire home/apt"))+
+  tm_shape(filter(st_laurent_prop, Listing_Type=="Entire home/apt" & Permit==FALSE))+
   tm_dots(size = 0.01, col="blue")+
 #  tm_shape(filter(st_laurent_prop, Listing_Type=="Private room"))+
 #  tm_dots(size = 0.01, col="green")+
@@ -62,16 +62,6 @@ tm_shape(st_l_d)+
   tm_layout(legend.position = c("left", "bottom"),
             frame = FALSE) +
   tm_compass()
-
-
-## Listings which will become illegal: All entire homes?
-tm_shape(st_buffer(plateau,200))+
-  tm_borders("black")+
-  #  tm_shape(plateau_streets)+
-  #  tm_lines(col="grey")+
-  tm_shape(filter(property,  Listing_Type == "Entire home/apt"&
-                    Permit == FALSE))+
-  tm_dots(size = 0.05, col="blue")
 
 
 # All airbnbs within the plateau colour coded by listing type
