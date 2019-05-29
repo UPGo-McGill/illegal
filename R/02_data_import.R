@@ -76,6 +76,11 @@ daily <- read_csv("data/Montreal_daily_2019.csv", col_types = cols(
   Homeaway = col_character())) %>% 
   arrange(Property_ID, Date)
 
+## Split Property_ID
+
+property<- property %>%
+  separate(Property_ID, c("AB/HA", "Property_ID"), "-") %>%
+  mutate(Property_ID = as.numeric(Property_ID))
 
 ## Trim listings to the Plateau in 2018 and add raffle results
 
@@ -105,10 +110,6 @@ daily <- inner_join(daily, st_drop_geometry(property), by = "Property_ID") %>%
 
 permit <- read_csv("data/plateau_legal.csv") %>%
   set_names(c("ETBL_ID", "Property_ID", "Host_ID"))
-
-property<- property %>%
-  separate(Property_ID, c("AB/HA", "Property_ID"), "-") %>%
-  mutate(Property_ID = as.numeric(Property_ID))
 
 property <- 
   property %>%
