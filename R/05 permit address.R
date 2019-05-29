@@ -29,21 +29,3 @@ plateau_address %>%
 plateau_address %>%
   filter(str_detect(Address, "Saint-Denis"))%>%
 
-## Map with locations of property with permits (red = airbnb aprox locations
-## blue = permit data actual locations)
-
-  tm_shape(st_buffer(plateau, 200)) +
-    tm_borders(lwd = 1) + 
-    tm_shape(plateau_streets)+
-    tm_lines(col="grey", alpha = 0.5)+
-    tm_shape(candidate_streets)+
-    tm_lines(col = "grey", alpha = 0.5) +
-    tm_shape(plateau) +
-    tm_borders(lwd = 2) +
-    tm_shape(filter(property, Permit==TRUE))+
-    tm_dots(size = 0.05, col="red")+
-    tm_shape(plateau_address)+
-    tm_dots(col = "#72001a") +
-    tm_layout(legend.position = c("left", "bottom"),
-              frame = FALSE) +
-    tm_compass()
