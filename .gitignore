@@ -6,3 +6,5 @@
 data/Montreal_daily_2019.csv
 data/Montreal_property_2019.csv
 R/analysis.R
+R/comparison_permitted_legal_illegal.R
+R/legal_plateau_profile.R
