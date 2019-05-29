@@ -106,6 +106,10 @@ daily <- inner_join(daily, st_drop_geometry(property), by = "Property_ID") %>%
 permit <- read_csv("data/plateau_legal.csv") %>%
   set_names(c("ETBL_ID", "Property_ID", "Host_ID"))
 
+property<- property %>%
+  separate(Property_ID, c("AB/HA", "Property_ID"), "-") %>%
+  mutate(Property_ID = as.numeric(Property_ID))
+
 property <- 
   property %>%
   mutate(Permit = Property_ID %in% permit$Property_ID) %>%
