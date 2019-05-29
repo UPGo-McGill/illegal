@@ -107,9 +107,6 @@ daily <-
 
 ## Join property and daily file
 
-daily <- daily %>%
-  mutate(Property_ID = as.numeric(Property_ID))
-
 daily <- inner_join(daily, st_drop_geometry(property), by = "Property_ID") %>% 
   select(Property_ID, Date, Status, Price, Host_ID, Listing_Type)
 
