@@ -27,11 +27,22 @@ DA <-
 ## Import private Airbnb files
 
 property <-
-  read_csv("data/Montreal_property_2019.csv") %>%
-  select(c(1:6, 8:9, 50)) %>% 
-  set_names(c(
-    "Property_ID", "Listing_Title", "Property_Type", "Listing_Type",
-    "Created", "Scraped", "Latitude", "Longitude", "Host_ID")) %>% 
+  read_csv("data/Montreal_property_2019.csv", col_types = cols_only(
+    `Property ID` = col_character(),
+    `Listing Title` = col_character(),
+    `Property Type` = col_character(),
+    `Listing Type` = col_character(),
+    `Created Date` = col_date(format = ""),
+    `Last Scraped Date` = col_date(format = ""),
+    Latitude = col_double(),
+    Longitude = col_double(),
+    `Airbnb Property ID` = col_double(),
+    `Airbnb Host ID` = col_double(),
+    `HomeAway Property ID` = col_character(),
+    `HomeAway Property Manager` = col_character())) %>% 
+  set_names(c("Property_ID", "Listing_Title", "Property_Type", "Listing_Type",
+              "Created", "Scraped", "Latitude", "Longitude", "Airbnb_PID",
+              "Airbnb_HID", "HomeAway_PID", "HomeAway_HID")) %>% 
   arrange(Property_ID) %>% 
   st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326) %>%
   st_transform(32618) %>% 
@@ -65,26 +76,26 @@ property <-
     "Private room in cave", "Entire tiny house",
     "Private room in casa particular (cuba)", "Casa particular (cuba)",
     "Private room in cottage", "Private room in tiny house",
-    "Entire casa particular", ""))
+    "Entire casa particular", "")) %>% 
+  select(-Property_Type)
 
-daily <- read_csv("data/Montreal_daily_2019.csv", col_types = cols(
-  Property_ID = col_character(),
-  Date = col_date(format = ""),
-  Status = col_character(),
-  Price = col_double(),
-  Airbnb = col_character(),
-  Homeaway = col_character())) %>% 
+daily <- 
+  read_csv("data/Montreal_daily_2019.csv", col_types = cols(
+    `Property ID` = col_character(),
+    Date = col_date(format = ""),
+    Status = col_factor(levels = c("U", "B", "A", "R")),
+    `Booked Date` = col_skip(),
+    `Price (USD)` = col_double(),
+    `Price (Native)` = col_skip(),
+    `Currency Native` = col_skip(),
+    `Reservation ID` = col_skip(),
+    `Airbnb Property ID` = col_double(),
+    `HomeAway Property ID` = col_character())) %>% 
+  set_names(c("Property_ID", "Date", "Status", "Price", "Airbnb_PID", 
+              "HomeAway_PID")) %>% 
+  filter(!is.na(Status)) %>%
   arrange(Property_ID, Date)
-
-## Split Property_ID
-
-property<- property %>%
-  separate(Property_ID, c("AB/HA", "Property_ID"), "-") %>%
-  mutate(Property_ID = as.numeric(Property_ID))
-
-daily<- daily %>%
-  separate(Property_ID, c("AB/HA", "Property_ID"), "-") %>%
-  mutate(Property_ID = as.numeric(Property_ID))
+  
 
 ## Trim listings to the Plateau in 2018 and add raffle results
 
@@ -94,9 +105,8 @@ property <-
          Scraped >= "2018-05-01",
          Created <= "2019-04-30") %>% 
   st_join(st_buffer(plateau["geometry"], 200),
-          join = st_within, left = FALSE)
-#%>% 
- # left_join(read_csv("data/raffle.csv"))
+          join = st_within, left = FALSE) %>% 
+  left_join(read_csv("data/raffle.csv"))
 
 daily <- 
   daily %>% 
@@ -107,8 +117,9 @@ daily <-
 
 ## Join property and daily file
 
-daily <- inner_join(daily, st_drop_geometry(property), by = "Property_ID") %>% 
-  select(Property_ID, Date, Status, Price, Host_ID, Listing_Type)
+daily <- inner_join(daily, st_drop_geometry(property)) %>% 
+  select(Property_ID, Date, Status, Price, Airbnb_PID, HomeAway_PID, Airbnb_HID,
+         HomeAway_HID, Listing_Type)
 
 
 ## Import legal permitted Plateau listings and add permit columns to property
@@ -119,7 +130,8 @@ permit <- read_csv("data/plateau_legal.csv") %>%
 property <- 
   property %>%
   mutate(Permit = Property_ID %in% permit$Property_ID) %>%
-  left_join(permit)
+  left_join(permit,
+            by = c("Airbnb_PID" = "Property_ID", "Airbnb_HID" = "Host_ID"))
 
 
 ## Find FREH listings and revenue
@@ -129,7 +141,7 @@ property <-
   group_by(Property_ID) %>% 
   summarize(
     n_reserved = sum(Status == "R"),
-    n_available = sum(Status != "B"),
+    n_available = sum(Status == "A" | Status == "R"),
     revenue = sum((Status == "R") * Price),
     FREH = if_else(
       first(Listing_Type) == "Entire home/apt" & n_reserved >= 90 &
@@ -140,7 +152,7 @@ property <-
 ## Find multi-listings
 
 daily <- strr_multilistings(daily, listing_type = Listing_Type,
-                            host_ID = Host_ID, date = Date)
+                            host_ID = Airbnb_HID, date = Date)
 
 property <- 
   daily %>%
@@ -153,7 +165,7 @@ property <-
 
 property <- 
   property %>% 
-  group_by(Host_ID, Listing_Type) %>% 
+  group_by(Airbnb_HID, Listing_Type) %>% 
   mutate(LFRML = case_when(
     Listing_Type != "Entire home/apt" ~ FALSE,
     ML == FALSE                       ~ FALSE,
@@ -166,7 +178,7 @@ property <-
 
 property <- 
   property %>% 
-  group_by(Host_ID, Listing_Type) %>% 
+  group_by(Airbnb_HID, Listing_Type) %>% 
   mutate(LFRML = if_else(
     sum(LFRML) > 1 & n_reserved != min(n_reserved),
     FALSE, LFRML)) %>% 
@@ -174,7 +186,7 @@ property <-
 
 property <- 
   property %>% 
-  group_by(Host_ID, Listing_Type) %>% 
+  group_by(Airbnb_HID, Listing_Type) %>% 
   mutate(prob = sample(0:10000, n(), replace = TRUE),
          LFRML = if_else(
            sum(LFRML) > 1 & prob != max(prob), FALSE, LFRML)) %>% 
@@ -189,8 +201,8 @@ property <-
 # Identify ghost hotels
 
 GH_list <-
-  strr_ghost(property, Property_ID, Host_ID, Created, Scraped, "2018-01-01",
-           "2018-12-31", listing_type = Listing_Type) %>% 
+  strr_ghost(property, Property_ID, Airbnb_HID, Created, Scraped, "2018-05-01",
+           "2019-04-30", listing_type = Listing_Type) %>% 
   pull(property_IDs) %>%
   unlist() %>%
   unique()
@@ -216,3 +228,4 @@ property <-
     TRUE                           ~ TRUE))
 
 
+sum(property$Legal)
