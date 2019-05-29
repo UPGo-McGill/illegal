@@ -63,11 +63,7 @@ permitted_income <- permitted_income$total
 permitted_income/nrow(permitted)
 
 legal_income <- 
-  legal %>% 
-  ungroup() %>% 
-  summarise(total = sum(revenue))
-
-legal_income <- legal_income$total
+  sum(legal$revenue, na.rm = TRUE)
 
 legal_income/nrow(legal)
 
