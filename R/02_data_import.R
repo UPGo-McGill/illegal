@@ -82,6 +82,10 @@ property<- property %>%
   separate(Property_ID, c("AB/HA", "Property_ID"), "-") %>%
   mutate(Property_ID = as.numeric(Property_ID))
 
+daily<- daily %>%
+  separate(Property_ID, c("AB/HA", "Property_ID"), "-") %>%
+  mutate(Property_ID = as.numeric(Property_ID))
+
 ## Trim listings to the Plateau in 2018 and add raffle results
 
 property <-
@@ -90,8 +94,9 @@ property <-
          Scraped >= "2018-05-01",
          Created <= "2019-04-30") %>% 
   st_join(st_buffer(plateau["geometry"], 200),
-          join = st_within, left = FALSE) %>% 
-  left_join(read_csv("data/raffle.csv"))
+          join = st_within, left = FALSE)
+#%>% 
+ # left_join(read_csv("data/raffle.csv"))
 
 daily <- 
   daily %>% 
