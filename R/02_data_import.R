@@ -129,7 +129,7 @@ permit <- read_csv("data/plateau_legal.csv") %>%
 
 property <- 
   property %>%
-  mutate(Permit = Property_ID %in% permit$Property_ID) %>%
+  mutate(Permit = Airbnb_PID %in% permit$Property_ID) %>%
   left_join(permit,
             by = c("Airbnb_PID" = "Property_ID", "Airbnb_HID" = "Host_ID"))
 
