@@ -2,13 +2,13 @@
 
 # Sort into 3 groups
 permitted <- property %>% filter(Permit == TRUE) 
-permitted_hosts <- permitted %>% count(Host_ID)
+permitted_hosts <- permitted %>% count(Airbnb_HID)
 
 legal <- property %>% filter(Legal == TRUE & Permit == FALSE)
-legal_hosts <- legal %>% count(Host_ID)
+legal_hosts <- legal %>% count(Airbnb_HID)
 
 illegal <- property %>% filter(Legal == FALSE)
-illegal_hosts <- illegal %>% count(Host_ID)
+illegal_hosts <- illegal %>% count(Airbnb_HID)
 
 ## 1 Operators
 
