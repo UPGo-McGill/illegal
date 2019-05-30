@@ -40,35 +40,9 @@ tm_shape(st_buffer(plateau, 200)) +
   tm_compass()
 
 
-## St-Denis/St-Laurent buffers and listings within buffers
-figure2 <- tm_shape(st_buffer(plateau, 200)) +
-  tm_borders(lwd = 1) + 
-  tm_shape(plateau_streets)+
-  tm_lines(col="grey", alpha = 0.5)+
-  tm_shape(candidate_streets)+
-  tm_lines(col = "grey", alpha = 0.5) +
-  tm_shape(plateau) +
-  tm_borders(lwd = 2) +
-  tm_shape(st_laurent_buff[])+
-  tm_fill(col="lightblue", alpha=.5)+
-  tm_shape(st_denis_buff[])+
-  tm_fill(col="lightblue", alpha = .5)+
-  tm_shape(st_denis_prop[])+
-  tm_dots(size = 0.01, col="black", alpha = 0.75)+
-  tm_shape(st_laurent_prop[])+
-  tm_dots(size = 0.01, col = "black", alpha = 0.75)+
-  #tm_shape(filter(property, Permit == TRUE))+
-  #tm_dots(size = 0.05, col="blue")+ 
-  tm_layout(legend.position = c("left", "bottom"),
-            frame = FALSE) +
-  tm_compass()
-
-
-tmap_save(figure2, "output/buffered_listings", width = 2400, height = 2400 )
-
 
 ## St-L and St-D, will require permits: All entire homes on St Denis, St Laurent?
-tm_shape(st_l_d)+
+figure2 <- tm_shape(st_l_d)+
   tm_fill(col="grey", alpha = .45)+
   tm_shape(plateau_streets)+
   tm_lines(col="grey")+
@@ -78,7 +52,8 @@ tm_shape(st_l_d)+
   tm_dots(size = 0.3, col="darkred", alpha = 0.6)+
   tm_shape(filter(st_laurent_prop, Legal==FALSE))+
   tm_dots(size = 0.3, col="darkred", alpha = 0.6)+
-  tm_shape(address_st_d_l)+
+  tm_shape(filter(plateau_address, str_detect(Address, "Laurent")||
+                    str_detect(Address, "Denis")))+
   tm_dots(size = 0.3, col= "darkblue", alpha = 0.6)+
   tm_add_legend(type="symbol",
                 col= c("darkred", "darkblue"),
@@ -87,9 +62,11 @@ tm_shape(st_l_d)+
                 alpha = 0.6,
                 title=" ") +
   tm_layout(legend.position = c("left", "bottom"),
+            legend.width=6,
             frame = FALSE) +
   tm_compass()
 
+tmap_save(figure2, "output/buffered_listings", width = 2400, height = 2400 )
 
 
 # All airbnbs within the plateau colour coded by listing type
