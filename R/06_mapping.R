@@ -88,18 +88,17 @@ tm_shape(st_buffer(plateau, 200)) +
   tm_shape(plateau) +
   tm_borders(lwd = 2) +
   tm_shape(property)+
-  tm_dots(col = "Listing_Type", palette = get_brewer_pal("-Greens", n = 3, contrast = c(0.29, 0.83)), 
-          alpha = 0.75, legend.show = FALSE, size = "revenue", 
+  tm_dots(col = "Listing_Type", palette = get_brewer_pal("Dark2", n = 3), 
+          alpha = 0.8, legend.show = FALSE, size = "revenue", 
           title.size = "Revenu", size.lim = c(0, 100000))+
   
-  #  tm_add_legend(type="symbol",
-  #               palette = get_brewer_pal("Greens", n = 3, contrast = c(0.44, 0.7)),
-  #                # col= c("#323695", "#fee090", "#d73027"),
-  #                labels=c("Logement entier", "Chambre privée", "Chambre partagée"), 
-  #                title="Type de Logement") +
+    tm_add_legend(type="symbol",
+                  col= get_brewer_pal("Dark2", n = 3),
+                  labels=c("Logement entier", "Chambre privée", "Chambre partagée"), 
+                  title="Type de Logement") +
   tm_compass()
 
-
+palette_explorer()
 # All listings under current legislation colour coded by legality
 tm_shape(st_buffer(plateau, 200)) +
   tm_borders(lwd = 1) + 
