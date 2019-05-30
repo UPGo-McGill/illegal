@@ -120,7 +120,7 @@ figure4 <- tm_shape(st_buffer(plateau, 200)) +
   tm_shape(plateau) +
   tm_borders(lwd = 2) +
   tm_shape(filter(property, Legal == FALSE))+
-  tm_dots(col = "#72001a", 
+  tm_dots(col = "darkred", 
          size = "revenue",
          size.lim = c(0, 100000),
          scale = 4/3,
