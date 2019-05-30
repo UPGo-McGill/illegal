@@ -65,9 +65,9 @@ tm_shape(st_buffer(plateau, 200)) +
 tm_shape(st_l_d)+
   tm_fill(col="grey", alpha = .3)+
   tm_shape(filter(st_denis_prop,Legal==FALSE))+
-  tm_dots(size = 0.01, col="blue")+
+  tm_dots(size = 0.1, col="darkred", alpha = 0.6)+
   tm_shape(filter(st_laurent_prop, Legal==FALSE))+
-  tm_dots(size = 0.01, col="blue")+
+  tm_dots(size = 0.1, col="darkred", alpha = 0.6)+
   tm_shape(plateau_streets)+
   tm_lines(col="grey")+
   tm_shape(candidate_streets)+
@@ -75,7 +75,6 @@ tm_shape(st_l_d)+
   tm_layout(legend.position = c("left", "bottom"),
             frame = FALSE) +
   tm_compass()
-
 
 
 # All airbnbs within the plateau colour coded by listing type
@@ -88,17 +87,20 @@ tm_shape(st_buffer(plateau, 200)) +
   tm_shape(plateau) +
   tm_borders(lwd = 2) +
   tm_shape(property)+
-  tm_dots(col = "Listing_Type", palette = get_brewer_pal("-Dark2", n = 3), 
-          alpha = 0.8, legend.show = FALSE, size = "revenue", 
+  tm_dots(col = "Listing_Type", scale = 4/3, palette = get_brewer_pal("-Dark2", n = 3), 
+          alpha = 0.6, legend.show = FALSE, size = "revenue", 
           title.size = "Revenu", size.lim = c(0, 100000))+
-  
-    tm_add_legend(type="symbol",
-                  col= get_brewer_pal("-Dark2", n = 3),
-                  labels=c("Logement entier", "Chambre privée", "Chambre partagée"), 
-                  title="Type de Logement") +
+tm_add_legend(type="symbol",
+              col= get_brewer_pal("-Dark2", n = 3),
+              labels=c("Logement entier", "Chambre privée", "Chambre partagée"),
+              border.lwd = NA,
+              alpha = 0.6,
+              title="Type de Logement") +
+  tm_layout(legend.position = c("left", "bottom"),
+            frame = FALSE) +
   tm_compass()
 
-palette_explorer()
+
 # All listings under current legislation colour coded by legality
 tm_shape(st_buffer(plateau, 200)) +
   tm_borders(lwd = 1) + 
