@@ -10,6 +10,7 @@ library(units)
 library(dodgr)
 library(stplanr)
 library(mapview)
+library(shinyjs)
 
 ## Census Mapper - Run Personal API
 # options(cancensus.api_key = "CensusMapper_a552c075421feb150db6cbf1d1707230")
