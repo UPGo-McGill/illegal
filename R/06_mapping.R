@@ -31,9 +31,9 @@ tm_shape(st_buffer(plateau, 200)) +
   tm_shape(plateau) +
   tm_borders(lwd = 2) +
   tm_shape(st_laurent_buff[])+
-  tm_fill(col="darkolivegreen3", alpha=.3)+
+  tm_fill(col="grey", alpha=.3)+
   tm_shape(st_denis_buff[])+
-  tm_fill(col="darkolivegreen3", alpha = .3)+
+  tm_fill(col="grey", alpha = .3)+
   tm_shape(st_denis_prop[])+
   tm_dots(size = 0.01, col="black")+
   tm_shape(st_laurent_prop[])+
@@ -47,14 +47,10 @@ tm_shape(st_buffer(plateau, 200)) +
 ## St-L and St-D, will require permits: All entire homes on St Denis, St Laurent?
 tm_shape(st_l_d)+
   tm_fill(col="grey", alpha = .3)+
-  tm_shape(filter(st_denis_prop, Listing_Type=="Entire home/apt"))+
+  tm_shape(filter(st_denis_prop,Legal==FALSE))+
   tm_dots(size = 0.01, col="blue")+
-#  tm_shape(filter(st_denis_prop, Listing_Type=="Private room"))+
-#  tm_dots(size = 0.01, col="green")+
-  tm_shape(filter(st_laurent_prop, Listing_Type=="Entire home/apt" & Permit==FALSE))+
+  tm_shape(filter(st_laurent_prop, Legal==FALSE))+
   tm_dots(size = 0.01, col="blue")+
-#  tm_shape(filter(st_laurent_prop, Listing_Type=="Private room"))+
-#  tm_dots(size = 0.01, col="green")+
   tm_shape(plateau_streets)+
   tm_lines(col="grey")+
   tm_shape(candidate_streets)+
