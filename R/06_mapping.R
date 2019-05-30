@@ -64,7 +64,7 @@ figure2 <- tm_shape(st_buffer(plateau, 200)) +
   tm_compass()
 
 
-tmap_save(figure2, "output/illegal_listings.png", width = 2400, height = 2400 )
+tmap_save(figure2, "output/buffered_listings", width = 2400, height = 2400 )
 
 
 ## St-L and St-D, will require permits: All entire homes on St Denis, St Laurent?
@@ -93,7 +93,7 @@ tm_shape(st_l_d)+
 
 
 # All airbnbs within the plateau colour coded by listing type
-tm_shape(st_buffer(plateau, 200)) +
+figure3 <- tm_shape(st_buffer(plateau, 200)) +
   tm_borders(lwd = 1) + 
   tm_shape(plateau_streets)+
   tm_lines(col="grey", alpha = 0.5)+
@@ -114,6 +114,7 @@ tm_add_legend(type="symbol",
   tm_layout(legend.position = c("left", "bottom"),
             frame = FALSE) +
   tm_compass()
+tmap_save(figure3, "output/all_listings", width = 2400, height = 2400 )
 
 
 # All listings under current legislation colour coded by legality
@@ -132,7 +133,7 @@ tm_shape(st_buffer(plateau, 200)) +
   tm_compass()
 
 # All illegal listings under current legislation
-tm_shape(st_buffer(plateau, 200)) +
+figure4 <- tm_shape(st_buffer(plateau, 200)) +
   tm_borders(lwd = 1) + 
   tm_shape(plateau_streets)+
   tm_lines(col="grey", alpha = 0.5)+
@@ -151,9 +152,12 @@ tm_shape(st_buffer(plateau, 200)) +
             frame = FALSE) +
   tm_compass()
 
+tmap_save(figure4, "output/illegal_listings", width = 2400, height = 2400 )
+
+
 # Housing loss
 # FREH + ghost hotels 
-tm_shape(st_buffer(plateau, 200)) +
+figure5 <- tm_shape(st_buffer(plateau, 200)) +
   tm_borders(lwd = 1) + 
   tm_shape(plateau_streets)+
   tm_lines(col="grey", alpha = 0.5)+
@@ -177,4 +181,6 @@ tm_shape(st_buffer(plateau, 200)) +
   tm_layout(legend.position = c("left", "bottom"),
             frame = FALSE) +
   tm_compass()
+
+tmap_save(figure5, "output/housing_loss", width = 2400, height = 2400 )
 
