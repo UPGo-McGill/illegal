@@ -121,7 +121,12 @@ tm_shape(st_buffer(plateau, 200)) +
   tm_shape(plateau) +
   tm_borders(lwd = 2) +
   tm_shape(filter(property, Legal == FALSE))+
-  tm_dots(col = "#72001a") +
+  tm_dots(col = "#72001a", 
+         size = "revenue",
+         size.lim = c(0, 100000),
+         scale = 4/3,
+         alpha = 0.6, 
+         title.size = "Revenu") +
   tm_layout(legend.position = c("left", "bottom"),
             frame = FALSE) +
   tm_compass()
@@ -138,16 +143,17 @@ tm_shape(st_buffer(plateau, 200)) +
   tm_borders(lwd = 2) +
   tm_shape(filter(property, FREH == TRUE | GH == TRUE)) +
   tm_bubbles(
+    scale = 4/3,
     style = "fixed",
     size.lim = c(0, 100000),
     size = "revenue", 
     col = "Legal", 
-    alpha = 0.5,
+    alpha = 0.6,
     border.lwd = NA,
     palette = c("darkred", "darkblue"),
     title.col = "Legal",
     labels = c("Non", "Oui"),
-    title.size = "Revenu ($)")+
+    title.size = "Revenu")+
   tm_layout(legend.position = c("left", "bottom"),
             frame = FALSE) +
   tm_compass()
