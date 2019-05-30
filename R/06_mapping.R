@@ -7,7 +7,7 @@ source("R/05 permit address.R")
 palette <- c('#313695','#fee090','#d73027','#72001a')
 
 ## Exact location of permitted listings
-tm_shape(st_buffer(plateau, 200)) +
+figure1 <- tm_shape(st_buffer(plateau, 200)) +
   tm_borders(lwd = 1) + 
   tm_shape(plateau_streets)+
   tm_lines(col="grey", alpha = 0.5)+
@@ -20,6 +20,8 @@ tm_shape(st_buffer(plateau, 200)) +
   tm_layout(legend.position = c("left", "bottom"),
             frame = FALSE) +
   tm_compass()
+
+tmap_save(figure1, "output/permitted_listings.png", width = 2400, height = 2400 )
 
 
 ## Revenue map 
@@ -39,7 +41,7 @@ tm_shape(st_buffer(plateau, 200)) +
 
 
 ## St-Denis/St-Laurent buffers and listings within buffers
-tm_shape(st_buffer(plateau, 200)) +
+figure2 <- tm_shape(st_buffer(plateau, 200)) +
   tm_borders(lwd = 1) + 
   tm_shape(plateau_streets)+
   tm_lines(col="grey", alpha = 0.5)+
@@ -60,6 +62,9 @@ tm_shape(st_buffer(plateau, 200)) +
   tm_layout(legend.position = c("left", "bottom"),
             frame = FALSE) +
   tm_compass()
+
+
+tmap_save(figure2, "output/illegal_listings.png", width = 2400, height = 2400 )
 
 ## St-L and St-D, will require permits: All entire homes on St Denis, St Laurent?
 tm_shape(st_l_d)+
