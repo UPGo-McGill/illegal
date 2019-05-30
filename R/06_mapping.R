@@ -115,10 +115,18 @@ tm_shape(st_buffer(plateau, 200)) +
   tm_lines(col = "grey", alpha = 0.5) +
   tm_shape(plateau) +
   tm_borders(lwd = 2) +
-  tm_shape(filter(property, FREH == TRUE))+
-  tm_dots(col = "Legal", palette = c("#72001a", "blue"), legend.show = FALSE) +
-  tm_shape(filter(property, GH == TRUE))+
-  tm_dots(col = "Legal", palette = c(palette = c("#72001a", "blue"))) +
+  tm_shape(filter(property, FREH == TRUE | GH == TRUE)) +
+  tm_bubbles(
+    style = "fixed",
+    scale = 5/3,
+    breaks = c(0, 25000, 50000, 75000, 100000, Inf),
+    size = "revenue", 
+    col = "Legal", 
+    border.lwd = NA,
+    palette = c("darkred", "darkblue"),
+    title.col = "Legal",
+    labels = c("Non", "Oui"),
+    title.size = "Revenu ($)")+
   tm_layout(legend.position = c("left", "bottom"),
             frame = FALSE) +
   tm_compass()
