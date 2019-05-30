@@ -139,10 +139,10 @@ tm_shape(st_buffer(plateau, 200)) +
   tm_shape(filter(property, FREH == TRUE | GH == TRUE)) +
   tm_bubbles(
     style = "fixed",
-    scale = 5/3,
-    breaks = c(0, 25000, 50000, 75000, 100000, Inf),
+    size.lim = c(0, 100000),
     size = "revenue", 
     col = "Legal", 
+    alpha = 0.5,
     border.lwd = NA,
     palette = c("darkred", "darkblue"),
     title.col = "Legal",
@@ -151,3 +151,4 @@ tm_shape(st_buffer(plateau, 200)) +
   tm_layout(legend.position = c("left", "bottom"),
             frame = FALSE) +
   tm_compass()
+
