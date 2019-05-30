@@ -78,8 +78,8 @@ tm_shape(st_l_d)+
                 col= c("darkred", "darkblue"),
                 labels=c("Résidences de tourisme illégales", "Résidences avec une attestation"),
                 border.lwd = NA,
-                alpha = 0.6)
-            #    title="") +
+                alpha = 0.6,
+                title=" ") +
   tm_layout(legend.position = c("left", "bottom"),
             frame = FALSE) +
   tm_compass()
