@@ -66,19 +66,20 @@ figure2 <- tm_shape(st_buffer(plateau, 200)) +
 
 tmap_save(figure2, "output/illegal_listings.png", width = 2400, height = 2400 )
 
+
 ## St-L and St-D, will require permits: All entire homes on St Denis, St Laurent?
 tm_shape(st_l_d)+
-  tm_fill(col="grey", alpha = .3)+
+  tm_fill(col="grey", alpha = .45)+
   tm_shape(plateau_streets)+
   tm_lines(col="grey")+
   tm_shape(candidate_streets)+
   tm_lines(col= "grey42")+
   tm_shape(filter(st_denis_prop,Legal==FALSE))+
-  tm_dots(size = 0.1, col="darkred", alpha = 0.6)+
+  tm_dots(size = 0.3, col="darkred", alpha = 0.6)+
   tm_shape(filter(st_laurent_prop, Legal==FALSE))+
-  tm_dots(size = 0.1, col="darkred", alpha = 0.6)+
-  tm_shape(plateau_address)+
-  tm_dots(size = 0.1, col= "darkblue", alpha = 0.6)+
+  tm_dots(size = 0.3, col="darkred", alpha = 0.6)+
+  tm_shape(address_st_d_l)+
+  tm_dots(size = 0.3, col= "darkblue", alpha = 0.6)+
   tm_add_legend(type="symbol",
                 col= c("darkred", "darkblue"),
                 labels=c("Résidences de tourisme illégales", "Résidences avec une attestation"),
@@ -88,6 +89,7 @@ tm_shape(st_l_d)+
   tm_layout(legend.position = c("left", "bottom"),
             frame = FALSE) +
   tm_compass()
+
 
 
 # All airbnbs within the plateau colour coded by listing type
