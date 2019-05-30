@@ -16,7 +16,7 @@ figure1 <- tm_shape(st_buffer(plateau, 200)) +
   tm_shape(plateau) +
   tm_borders(lwd = 2) +
   tm_shape(plateau_address)+
-  tm_dots(col = "darkblue", size = 0.1, alpha = 0.6, border.col = "black", border.lwd = 0.7) +
+  tm_dots(col = "darkblue", size = 0.4, alpha = 0.6, border.col = "black", border.lwd = 0.7) +
   tm_layout(legend.position = c("left", "bottom"),
             frame = FALSE) +
   tm_compass()
