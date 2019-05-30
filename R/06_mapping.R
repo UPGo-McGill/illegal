@@ -81,19 +81,19 @@ tm_shape(st_l_d)+
 # All airbnbs within the plateau colour coded by listing type
 tm_shape(st_buffer(plateau, 200)) +
   tm_borders(lwd = 1) + 
-  #  tm_shape(plateau_streets)+
-  #  tm_lines(col="grey", alpha = 0.5)+
+  tm_shape(plateau_streets)+
+  tm_lines(col="grey", alpha = 0.5)+
   tm_shape(candidate_streets)+
   tm_lines(col = "grey", alpha = 0.5) +
   tm_shape(plateau) +
   tm_borders(lwd = 2) +
   tm_shape(property)+
-  tm_dots(col = "Listing_Type", palette = get_brewer_pal("Dark2", n = 3), 
+  tm_dots(col = "Listing_Type", palette = get_brewer_pal("-Dark2", n = 3), 
           alpha = 0.8, legend.show = FALSE, size = "revenue", 
           title.size = "Revenu", size.lim = c(0, 100000))+
   
     tm_add_legend(type="symbol",
-                  col= get_brewer_pal("Dark2", n = 3),
+                  col= get_brewer_pal("-Dark2", n = 3),
                   labels=c("Logement entier", "Chambre privée", "Chambre partagée"), 
                   title="Type de Logement") +
   tm_compass()
