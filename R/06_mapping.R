@@ -16,10 +16,27 @@ tm_shape(st_buffer(plateau, 200)) +
   tm_shape(plateau) +
   tm_borders(lwd = 2) +
   tm_shape(plateau_address)+
-  tm_dots(col = "#72001a") +
+  tm_bubbles(col = "blue2", size = 0.1, alpha = 0.75, border.col = "black", border.lwd = 0.7) +
   tm_layout(legend.position = c("left", "bottom"),
             frame = FALSE) +
   tm_compass()
+
+
+## Revenue map 
+tm_shape(st_buffer(plateau, 200)) +
+  tm_borders(lwd = 1) + 
+  tm_shape(plateau_streets)+
+  tm_lines(col="grey", alpha = 0.5)+
+  tm_shape(candidate_streets)+
+  tm_lines(col = "grey", alpha = 0.5) +
+  tm_shape(plateau) +
+  tm_borders(lwd = 2) +
+  tm_shape(property)+
+  tm_dots(size = "revenue", col = "black", title.size = "Revenu", alpha = 0.75, scale=1.1)+
+  tm_layout(legend.position = c("left", "bottom"),
+            frame = FALSE) +
+  tm_compass()
+
 
 ## St-Denis/St-Laurent buffers and listings within buffers
 tm_shape(st_buffer(plateau, 200)) +
@@ -31,17 +48,17 @@ tm_shape(st_buffer(plateau, 200)) +
   tm_shape(plateau) +
   tm_borders(lwd = 2) +
   tm_shape(st_laurent_buff[])+
-  tm_fill(col="grey", alpha=.3)+
+  tm_fill(col="lightblue", alpha=.5)+
   tm_shape(st_denis_buff[])+
-  tm_fill(col="grey", alpha = .3)+
+  tm_fill(col="lightblue", alpha = .5)+
   tm_shape(st_denis_prop[])+
-  tm_dots(size = 0.01, col="black")+
+  tm_dots(size = 0.01, col="black", alpha = 0.75)+
   tm_shape(st_laurent_prop[])+
-  tm_dots(size = 0.01, col = "black")+
+  tm_dots(size = 0.01, col = "black", alpha = 0.75)+
   #tm_shape(filter(property, Permit == TRUE))+
   #tm_dots(size = 0.05, col="blue")+ 
   tm_layout(legend.position = c("left", "bottom"),
-  frame = FALSE) +
+            frame = FALSE) +
   tm_compass()
 
 ## St-L and St-D, will require permits: All entire homes on St Denis, St Laurent?
@@ -63,16 +80,20 @@ tm_shape(st_l_d)+
 # All airbnbs within the plateau colour coded by listing type
 tm_shape(st_buffer(plateau, 200)) +
   tm_borders(lwd = 1) + 
-  tm_shape(plateau_streets)+
-  tm_lines(col="grey", alpha = 0.5)+
+  #tm_shape(plateau_streets)+
+  #tm_lines(col="grey", alpha = 0.5)+
   tm_shape(candidate_streets)+
   tm_lines(col = "grey", alpha = 0.5) +
   tm_shape(plateau) +
   tm_borders(lwd = 2) +
   tm_shape(property)+
-  tm_dots(col = "Listing_Type", palette = palette, title = "Listing Type") +
-  tm_layout(legend.position = c("left", "bottom"),
-            frame = FALSE) +
+  tm_dots(col = "Listing_Type", palette = c("#323695", "#fee090", "#d73027"), alpha = 0.75, size =0.07, legend.show = FALSE) +
+  #  tm_layout(legend.position = c("left", "bottom"),
+  #            frame = FALSE) +
+  tm_add_legend(type="fill",
+                col= c("#323695", "#fee090", "#d73027"),
+                labels=c("Logement entier", "Chambre privée", "Chambre partagée"), 
+                title="Type de Logement") +
   tm_compass()
 
 # All listings under current legislation colour coded by legality
