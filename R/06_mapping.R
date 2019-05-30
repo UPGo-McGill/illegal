@@ -52,7 +52,7 @@ figure2 <- tm_shape(st_l_d)+
   tm_dots(size = 0.3, col="darkred", alpha = 0.6)+
   tm_shape(filter(st_laurent_prop, Legal==FALSE))+
   tm_dots(size = 0.3, col="darkred", alpha = 0.6)+
-  tm_shape(filter(plateau_address, str_detect(Address, "Laurent")||
+  tm_shape(filter(plateau_address, str_detect(Address, "Laurent")|
                     str_detect(Address, "Denis")))+
   tm_dots(size = 0.3, col= "darkblue", alpha = 0.6)+
   tm_add_legend(type="symbol",
