@@ -21,8 +21,6 @@ plateau_address <- inner_join(st_drop_geometry(property), plateau_address) %>%
   st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326) %>%
   st_transform(32618)
 
-## Permits on St Laurent and St Denis
 
-address_st_d_l <- plateau_address %>%
-  filter(str_detect(Address, "Laurent")||str_detect(Address, "Denis"))
-  
+
+
