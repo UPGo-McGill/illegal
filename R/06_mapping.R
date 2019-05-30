@@ -66,7 +66,7 @@ figure2 <- tm_shape(st_l_d)+
             frame = FALSE) +
   tm_compass()
 
-tmap_save(figure2, "output/buffered_listings", width = 2400, height = 2400 )
+tmap_save(figure2, "output/buffered_listings.png", width = 2400, height = 2400 )
 
 
 # All airbnbs within the plateau colour coded by listing type
@@ -91,7 +91,8 @@ tm_add_legend(type="symbol",
   tm_layout(legend.position = c("left", "bottom"),
             frame = FALSE) +
   tm_compass()
-tmap_save(figure3, "output/all_listings", width = 2400, height = 2400 )
+
+tmap_save(figure3, "output/all_listings.png", width = 2400, height = 2400 )
 
 
 # All listings under current legislation colour coded by legality
@@ -129,7 +130,7 @@ figure4 <- tm_shape(st_buffer(plateau, 200)) +
             frame = FALSE) +
   tm_compass()
 
-tmap_save(figure4, "output/illegal_listings", width = 2400, height = 2400 )
+tmap_save(figure4, "output/illegal_listings.png", width = 2400, height = 2400 )
 
 
 # Housing loss
@@ -159,5 +160,5 @@ figure5 <- tm_shape(st_buffer(plateau, 200)) +
             frame = FALSE) +
   tm_compass()
 
-tmap_save(figure5, "output/housing_loss", width = 2400, height = 2400 )
+tmap_save(figure5, "output/housing_loss.png", width = 2400, height = 2400 )
 
