@@ -97,7 +97,7 @@ daily <-
   arrange(Property_ID, Date)
   
 
-## Trim listings to the Plateau in 2018 and add raffle results
+## Trim listings to the Plateau in May 2018-April 2019 and add raffle results
 
 property <-
   property %>% 
@@ -161,7 +161,7 @@ property <-
   inner_join(property, .)
 
 
-## Identify the least frequently rented multi-listing
+## Identify the least frequently rented multi-listing (LFRML)
 
 property <- 
   property %>% 
