@@ -14,7 +14,7 @@ plateau_streets <-
   rbind(plateau_streets$osm_polygons %>% st_cast("LINESTRING"), plateau_streets$osm_lines) %>% 
   as_tibble() %>% 
   st_as_sf() %>% 
-  st_transform(26918) %>%
+  st_transform(32618) %>%
   select(osm_id, name, geometry)
 
 ## STREETS PLATEAU
@@ -60,23 +60,11 @@ st_laurent_seg <- st_laurent_seg %>%
 st_laurent_seg <- st_laurent_seg[c(3,4,5),] %>%
   st_union()
 
-##BUFFERS ST LAURENT, ST DENIS (200m)
-st_denis_buff <-  st_denis_seg %>%
-  st_buffer(200)
-
-st_laurent_buff <-  st_laurent_seg%>%
-  st_buffer(200)
-
-rm(st_laurent_seg, st_denis_seg)
-
 ## Properties within St Laurent & St Denis Buffers
-property <- 
-  property %>%
-  st_as_sf() %>% 
-  st_transform(26918)
-
-st_laurent_prop <- property[lengths(st_within(property, st_laurent_buff))>0,]
-st_denis_prop <- property[lengths(st_within(property, st_denis_buff))>0,]
+st_laurent_prop <- property[lengths(st_within(property, 
+                                              st_buffer(st_laurent_seg,200)))>0,]
+st_denis_prop <- property[lengths(st_within(property, 
+                                            st_buffer(st_denis_seg,200)))>0,]
 
 ## Buffer union for mapping
 st_l_d <- st_union(st_laurent_buff, st_denis_buff)
