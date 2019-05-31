@@ -4,14 +4,14 @@ source("R/01_helper_functions.R")
 
 ## Get OSM data
 
-plateau_roads <- 
+plateau_streets <- 
   getbb("plateau-mont-royal montreal") %>% 
   opq() %>% 
   add_osm_feature(key = "highway") %>% 
   osmdata_sf()
 
 plateau_streets <- 
-  rbind(plateau_roads$osm_polygons %>% st_cast("LINESTRING"), plateau_roads$osm_lines) %>% 
+  rbind(plateau_streets$osm_polygons %>% st_cast("LINESTRING"), plateau_streets$osm_lines) %>% 
   as_tibble() %>% 
   st_as_sf() %>% 
   st_transform(26918) %>%
@@ -51,31 +51,32 @@ st_laurent_seg <- st_laurent [c(9,11,12),] %>%
   st_union()
 
 ## REMOVE EXTRA SEGMENT ST LAURENT
-st_laurent_section <- st_laurent_seg %>%
+st_laurent_seg <- st_laurent_seg %>%
   st_difference(sherbrooke)%>%
   st_difference(montroyal) %>%
   st_cast("LINESTRING")%>%
   as.matrix()
 
-st_laurent_section <- st_laurent_section[c(3,4,5),] %>%
+st_laurent_seg <- st_laurent_seg[c(3,4,5),] %>%
   st_union()
 
 ##BUFFERS ST LAURENT, ST DENIS (200m)
 st_denis_buff <-  st_denis_seg %>%
   st_buffer(200)
 
-st_laurent_buff <-  st_laurent_section %>%
+st_laurent_buff <-  st_laurent_seg%>%
   st_buffer(200)
 
+rm(st_laurent_seg, st_denis_seg)
 
 ## Properties within St Laurent & St Denis Buffers
-property_CRS <- 
+property <- 
   property %>%
   st_as_sf() %>% 
   st_transform(26918)
 
-st_laurent_prop <- property[lengths(st_within(property_CRS, st_laurent_buff))>0,]
-st_denis_prop <- property[lengths(st_within(property_CRS, st_denis_buff))>0,]
+st_laurent_prop <- property[lengths(st_within(property, st_laurent_buff))>0,]
+st_denis_prop <- property[lengths(st_within(property, st_denis_buff))>0,]
 
 ## Buffer union for mapping
 st_l_d <- st_union(st_laurent_buff, st_denis_buff)
