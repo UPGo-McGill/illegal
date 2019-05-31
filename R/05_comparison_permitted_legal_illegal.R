@@ -1,4 +1,4 @@
-############### PROFILE OF LEGAL PLATEAU LISTINGS ##############################
+############### COMPARISON BETWEEN PERMITTED, LEGAL, ILLEGAL ##############################
 
 # Load helpers
 source("R/01_helper_functions.R")

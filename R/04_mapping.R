@@ -25,10 +25,12 @@ figure1 <- basemap +
           alpha = 0.6, 
           border.col = "black",
           border.lwd = 0.7)
+
 tmap_save(figure1, "output/permitted_listings.png", width = 2400, height = 2400 )
 
 
 ## St-L and St-D, will require permits: All entire homes on St Denis, St Laurent?
+  # this figure does not use the basemap as it is at a different scale
 figure2 <- 
   tm_shape(st_l_d)+
   tm_fill(col="grey", alpha = .45)+
