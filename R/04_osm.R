@@ -77,5 +77,5 @@ property_CRS <-
 st_laurent_prop <- property[lengths(st_within(property_CRS, st_laurent_buff))>0,]
 st_denis_prop <- property[lengths(st_within(property_CRS, st_denis_buff))>0,]
 
-
+## Buffer union for mapping
 st_l_d <- st_union(st_laurent_buff, st_denis_buff)
