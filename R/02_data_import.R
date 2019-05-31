@@ -4,7 +4,6 @@
 
 source("R/01_helper_functions.R")
 
-
 ## Import Montreal geometries
 
 montreal <-
@@ -194,7 +193,7 @@ property <-
   
 
 ## Test for remaining LFRML ties:
-# property %>% st_drop_geometry() %>% group_by(Host_ID) %>%
+# property %>% st_drop_geometry() %>% group_by(Airbnb_HID) %>%
 # filter(sum(LFRML) > 1) %>% summarize(n_LFRML = sum(LFRML))
 
 
@@ -228,7 +227,6 @@ property <-
     TRUE                           ~ TRUE))
 
 
-sum(property$Legal)
 
 ## Import Exact Addresses From Permit Data
 

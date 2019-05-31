@@ -91,8 +91,7 @@ figure4 <- basemap +
 tmap_save(figure4, "output/illegal_listings.png", width = 2400, height = 2400 )
 
 
-# Housing loss
-# FREH + ghost hotels 
+# Housing loss - FREH + ghost hotels 
 figure5 <- basemap +
   tm_shape(filter(property, FREH == TRUE | GH == TRUE)) +
   tm_bubbles(

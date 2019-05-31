@@ -2,9 +2,7 @@
 
 # Load helpers
 source("R/01_helper_functions.R")
-source("R/04_osm.R")
-source("R/05 permit address.R")
-
+source("R/03_osm.R")
 
 ## Sort into 3 groups
 permitted <- property %>% filter(Permit == TRUE) 
@@ -17,7 +15,6 @@ illegal <- property %>% filter(Legal == FALSE)
 illegal_hosts <- illegal %>% count(Airbnb_HID)
 
 ## 1 Operators
-
 # 1A Number with 2+ listings
 permitted_hosts %>% filter(n > 1)
 
@@ -57,7 +54,6 @@ illegal_hosts %>%
 
 
 ## 2 Income
-
 # 2A LTM income for each sub-group
 permitted_income <- 
   permitted %>% 
