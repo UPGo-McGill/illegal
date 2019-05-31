@@ -1,6 +1,12 @@
 ############### PROFILE OF LEGAL PLATEAU LISTINGS ##############################
 
-# Sort into 3 groups
+# Load helpers
+source("R/01_helper_functions.R")
+source("R/04_osm.R")
+source("R/05 permit address.R")
+
+
+## Sort into 3 groups
 permitted <- property %>% filter(Permit == TRUE) 
 permitted_hosts <- permitted %>% count(Airbnb_HID)
 
