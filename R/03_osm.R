@@ -65,6 +65,3 @@ st_laurent_prop <- property[lengths(st_within(property,
                                               st_buffer(st_laurent_seg,200)))>0,]
 st_denis_prop <- property[lengths(st_within(property, 
                                             st_buffer(st_denis_seg,200)))>0,]
-
-## Buffer union for mapping
-st_l_d <- st_union(st_laurent_buff, st_denis_buff)
